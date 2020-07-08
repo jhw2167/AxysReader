@@ -27,7 +27,7 @@ private:
 
 	/*  Friend methods: File Stream Operators  */
 
-	// BEGIN DATE INSERTION STREAM OPERATOR
+	// BEGIN INSERTION STREAM OPERATOR
 	inline friend std::ostream & operator<<(std::ostream & os, const DataRow & dRow)
 	{
 		/*
@@ -36,19 +36,22 @@ private:
 				not include an additional delimitter
 		*/
 
+		cout << "calling method: " <<  dRow.reads.size() << endl;
+
 		const auto* sep = "";
 		const auto invBlank = ",";
 
-		for (const auto& col : dRow.writes) {
+		for (const auto& col : dRow.reads) {
 			os << sep << col;
 			sep = invBlank;
 		}
 
 		return os;
 	}
-	//END DATE INSERTION STREAM OPERATOR
+	//END INSERTION STREAM OPERATOR
  
-	//BEGIN DATE EXTRACTION STREAM OPERATOR
+
+	//BEGIN EXTRACTION STREAM OPERATOR
 	inline friend std::istream& operator>>(std::istream& is, DataRow& dRow)
 	{
 		/*
@@ -56,7 +59,7 @@ private:
 			will extract a single data column from CSV
 		*/
 
-		std::string streamErr = "ERROR: in Date class overloaded EXTRACTION operator>>\n";
+		std::string streamErr = "ERROR: in DataRow class overloaded EXTRACTION operator>>\n";
 		streamErr += "the input stream is in a failed state, no processing can take place...\n";
 
 		//Check if stream is initially in failed state
@@ -66,35 +69,46 @@ private:
 
 		try
 		{
-			bool endOfRow = false;
 
-			while (!endOfRow) {
+			string val;
+			char sep = ',';
+			std::getline(is, val);
+			std::istringstream ssLine(val);
+			//Declare new String and read row value into it 
 
-				string val;
-				is >> val;
-				//Declare new String and read column value into it 
+			char nextChar = ssLine.peek();
+			bool nextCol = !(nextChar == -1);
+			//Set nextChar and nextCol
 
+			while (nextCol) {
 
-				cout << val << endl;
+				/*
+					Parse data using char ',' as delimiter, we must be
+					careful though, cause some data have ',' in them already,
+					these data are wrapped in "" we must detect
+				*/
 
+				if (nextChar == '"') {
+					ssLine >> sep;
+					std::getline(ssLine, val, '"');
+					ssLine >> sep;
+					/*
+						If the column has a ',' in it already, we use
+						' " ' as our delimiter, then pick up the comma
+						following it with a ssLine >> sep at the end
+					*/
+				}
+				else {
+					std::getline(ssLine, val, ',');
+					/* Else we just get comma delimitted column */
+				}
 
-				dRow.reads.push_back(val);
+				dRow.pushBackReads(val);
+				nextChar = ssLine.peek();
+				//Peek next char to see what it is
 
-				endOfRow = true;
-			}
-
-
-
-
-			bool streamFailed = false;
-
-
-			if (streamFailed)
-			{
-				std::string readStreamErr = "DataRow class overloaded operator>> err\n";
-				readStreamErr += "the input stream is in a failed state, ";
-				readStreamErr += "possible attempt to read past end of file, ";
-				throw std::runtime_error(readStreamErr);
+				nextCol = !(nextChar == -1);
+				//If nextChar is -1 (end of the line), while loop will terminate
 			}
 
 		}
@@ -113,7 +127,6 @@ private:
 			cout << "Runtime error caught in DataRow (extraction) operator>> \n";
 			std::cout << rte1.what() << endl;
 		}
-
 		catch (...)
 		{
 			//catches all possible exceptions from stream extraction or from setting date
@@ -125,7 +138,7 @@ private:
 		return is;
 
 	}
-	//END DATE EXTRACTION STREAM OPERATOR
+	//END EXTRACTION STREAM OPERATOR
 
 
 	//End Stream Operators
@@ -136,10 +149,16 @@ public:
 	DataRow();
 
 
-
-
 	/*  Accessors  */
 	int getWriteCols();
+
+
+	/*  Modifiers  */
+	void setWriteCols(const int wc);
+
+
+	/*  Functions  */
+	void pushBackReads(const std::string &str);
 
 
 	/*  Destructor  */

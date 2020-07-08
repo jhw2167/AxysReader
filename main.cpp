@@ -14,6 +14,8 @@ int main(int argc, const char* argv[])
 
 	try
 	{
+		fileName = "db2c.csv";
+
 		if (fileName == "")
 		{
 			string noArg = "/t /t No filename submitted ";
@@ -30,12 +32,30 @@ int main(int argc, const char* argv[])
 		*/
 		if (inStream)
 		{
-			DataRow dRow;
-			inStream >> dRow;
+
+			vector<DataRow> dRows;
+
+			
+			for (int i = 0; i < 5; i++) {
+				DataRow row;
+
+				inStream >> row;
+				dRows.push_back(row);
+			}			
+
+			//Read Data Back
+			cout << endl << endl << "READ DATA BACK: " << endl << endl;
+			
+			for (auto i : dRows) {
+				cout << i << endl;
+			}
+
 		}
 		else
 			cout << "Not in stream" << endl;
 		
+
+
 	}
 	catch (missing_arguments& ma1) {
 		//Error handling

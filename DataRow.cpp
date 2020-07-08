@@ -27,6 +27,18 @@ int DataRow::getWriteCols () {
 }
 
 
+	/*  Modifiers  */
+void DataRow::setWriteCols(const int wc) {
+	writeCols = wc;
+}
+
+
+
+	/*  Functions  */
+void DataRow::pushBackReads(const std::string &str) {
+	reads.push_back(str);
+}
+
 
 
 //End accessors
