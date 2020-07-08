@@ -34,7 +34,6 @@ int main(int argc, const char* argv[])
 		{
 
 			vector<DataRow> dRows;
-
 			
 			for (int i = 0; i < 5; i++) {
 				DataRow row;
