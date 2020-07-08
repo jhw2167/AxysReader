@@ -5,15 +5,28 @@
 #pragma once
 
 
-
+#include <iomanip>
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <fstream>
+
 #include <exception>
 #include <stdexcept>
 
+#include <vector>
 
+
+//Using Statements
 using std::string;
+using std::cout;
+using std::endl;
+using std::ifstream;
+using std::ostream;
+using std::istream;
+using std::cin;
+using std::vector;
+
 using std::logic_error;
 
 

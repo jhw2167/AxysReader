@@ -1,10 +1,9 @@
 #pragma once
-#include <fstream>
-#include <vector>
 
 //Project Includes
 #include "Exceptions.h"
 #include "DateTime.h"
+#include "DataRow.h"
 
 /*
 	"AxysReader" C++ program to convert Excel Friendly Axys Finance report
@@ -19,15 +18,18 @@
 */
 
 
-//Using statements
-using std::string;
-using std::cout;
-using std::endl;
-using std::ifstream;
-using std::ostream;
-using std::istream;
-using std::cin;
-using std::vector;
+/*
+	//Using
+	using std::string;
+	using std::cout;
+	using std::endl;
+	using std::ifstream;
+	using std::ostream;
+	using std::istream;
+	using std::cin;
+	using std::vector;
+
+*/
 
 //Forward Function Declarations
 void loadData();

@@ -8,7 +8,7 @@ int main(int argc, const char* argv[])
 	string fileName = "";
 
 	cout << "Please move file to current directory " <<
-		"and enter full filename, e.g.: db1.csv " << endl;
+		"and enter full filename, e.g.: newData.csv " << endl;
 
 	cin >> fileName;
 
@@ -23,23 +23,38 @@ int main(int argc, const char* argv[])
 
 		cout << "File name: " << fileName << endl << endl;
 
-		// define ifstream object
-		ifstream inFile(fileName);
-		//defines stream and opens it at the same time
-
+		ifstream inStream(fileName);
+		/*
+			defines stream object we can read from and
+			opens it at the same time
+		*/
+		if (inStream)
+		{
+			DataRow dRow;
+			inStream >> dRow;
+		}
+		else
+			cout << "Not in stream" << endl;
+		
 	}
 	catch (missing_arguments& ma1) {
+		//Error handling
 		cout << "Logic error caught in main: " << endl;
 		cout << endl << ma1.what() << endl;
 	}
 
 	catch (file_open_error& foe1) {
+		//Error handling
 		cout << "File open error caugh in main: " << endl;
 		cout << endl << foe1.what() << endl;
 	}
 	catch (...) {
+		//Error handling
 		cout << "Unkown exception caught in main";
 	}
+
+
+	getchar();
 
 	return 0;
 }

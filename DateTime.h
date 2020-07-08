@@ -23,12 +23,6 @@
 #ifndef COSC52Summer2018P1_Date_h
 #define COSC52Summer2018P1_Date_h
 
-#include <iostream>
-#include <iomanip>
-#include <exception>
-#include <stdexcept>
-#include <sstream>
-
 #include "Exceptions.h"
 
 //#define DEBUG_DATE = 1
