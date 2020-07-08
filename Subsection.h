@@ -30,16 +30,26 @@
 class Subsection
 {
 private:
-	bool sectionEnd;
-	static vector<std::string> keywords;
+	const static std::string breaker;
+	const static std::string fileName;
+	// breaker is "&&&&&" string that delineates 
+	//header footers in subSectionConfig
 
-	static vector<std::string> header;
-	static vector<std::string> footer;
+	string subName;
+	static vector<std::string> keywords;
+	//subsection name and string of keywords that
+	//program looks for to identify headers
+
+	vector<std::string> header;
+	vector<std::string> footer;
+
+	static int headLength;
+	static int footLength;
 
 	static bool hasHeader;
 	static bool hasFooter;
 
-	vector<DataRow> rows;
+	std::vector<DataRow> rows;
 	int numRows;
 
 
@@ -67,14 +77,22 @@ private:
 	//Start EXTRACTION operator
 	inline friend std::istream& operator>>(std::istream& is, Subsection& sub) 
 	{
+		string line;
+		//declare generic string for getting lines
+
 		if (sub.hasHeader) {
-			//readHeader
+			
+			for (size_t i = 0; i != sub.headLength; i++) {
+				std::getline(is, line);
+				sub.header.push_back(line);
+			}
 		}
 
-		string line;
+		
 		std::getline(is, line);
 
-		bool readNext = !(line == sub.footer[0] || line == sub.header[0]);
+		bool readNext = !(line == sub.footer[0] || 
+			sub.containsKeyword(line));
 
 		while (readNext) {
 			
@@ -91,14 +109,21 @@ private:
 			sub.addRow(row);
 
 			std::getline(is, line);
-			readNext = !(line == sub.footer[0] || line == sub.header[0]);
+			readNext = !(line == sub.footer[0] || 
+				sub.containsKeyword(line) );
 			//If next Line = report footer or header, loop terminates as
 			//there are no more rows to read in this section
 		}
 
 		if (sub.hasFooter) {
-			//readHeader
+
+			for (size_t i = 0; i != sub.footLength; i++) {
+				std::getline(is, line);
+				sub.header.push_back(line);
+			}
 		}
+
+
 
 	}
 
@@ -110,11 +135,25 @@ public:
 	/*  Constructor  */
 	Subsection();
 
+	/*  Initializers  */
+
+	void initSubs();
+
+	void initHeader(std::ifstream& is);
+
+	void initFooter(std::ifstream& is);
+
+	void initKeywords(std::ifstream& is);
 
 	/*  Modifiers  */
 	/*  Accessors  */
-	/*  Functions  */
+
+	/* Other Functions  */
 	void addRow(const DataRow &r);
+
+	const bool containsKeyword(const std::string &check) const;
+
+	std::ifstream& readThrough(std::ifstream& is, std::string& brk);
 
 
 	/*  Destructors  */

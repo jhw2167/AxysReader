@@ -12,9 +12,14 @@ int main(int argc, const char* argv[])
 
 	cin >> fileName;
 
+	Subsection sub;
+
+	std::cout << "Initing subs now: " << std::endl << endl;
+	sub.initSubs();
+
 	try
 	{
-		fileName = "db2c.csv";
+		//fileName = "db2c.csv";
 
 		if (fileName == "")
 		{

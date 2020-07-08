@@ -69,7 +69,6 @@ private:
 
 		try
 		{
-
 			string val;
 			char sep = ',';
 			std::getline(is, val);
