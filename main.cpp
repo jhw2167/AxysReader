@@ -5,21 +5,19 @@
 int main(int argc, const char* argv[])
 {
 	//Lets get a name for the dile and open it up via cmd line
-	string fileName = "";
+	std::string fileName = "";
 
 	cout << "Please move file to current directory " <<
 		"and enter full filename, e.g.: newData.csv " << endl;
 
 	cin >> fileName;
 
-	Subsection sub;
-
-	std::cout << "Initing subs now: " << std::endl << endl;
-	sub.initSubs();
-
 	try
 	{
-		//fileName = "db2c.csv";
+		//initialize all static member variables in our objects from files
+		initObjects();
+		
+		fileName = "db3c.csv";
 
 		if (fileName == "")
 		{
@@ -35,31 +33,34 @@ int main(int argc, const char* argv[])
 			defines stream object we can read from and
 			opens it at the same time
 		*/
+
 		if (inStream)
 		{
-
-			vector<DataRow> dRows;
+			std::vector<Section> dRows;
 			
-			for (int i = 0; i < 5; i++) {
-				DataRow row;
+			for (int i = 0; i < 3; i++) {
+				Section row;
 
 				inStream >> row;
 				dRows.push_back(row);
-			}			
+			}
+
+			
 
 			//Read Data Back
 			cout << endl << endl << "READ DATA BACK: " << endl << endl;
 			
+			std::ofstream output("HOLDNGS.csv");
+			//declare output File Stream
+
 			for (auto i : dRows) {
-				cout << i << endl;
+				output << i << endl;
 			}
 
 		}
 		else
 			cout << "Not in stream" << endl;
 		
-
-
 	}
 	catch (missing_arguments& ma1) {
 		//Error handling
@@ -83,6 +84,24 @@ int main(int argc, const char* argv[])
 	return 0;
 }
 
+
+
+void initObjects()
+{
+	try
+	{
+		Section sub;
+		std::cout << "Initing subs now: " << std::endl << endl;
+		sub.initSubs();
+
+	}
+	catch (missing_arguments& ma)
+	{
+		std::cout << "Missing arguments exception caught in " 
+			<< "initObjects, rethrowing: " << endl;
+		throw ma;
+	}
+}
 
 void loadData()
 {

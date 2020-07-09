@@ -4,7 +4,7 @@
 #include "Exceptions.h"
 #include "DateTime.h"
 #include "DataRow.h"
-#include "Subsection.h"
+#include "Section.h"
 
 /*
 	"AxysReader" C++ program to convert Excel Friendly Axys Finance report
@@ -34,3 +34,4 @@
 
 //Forward Function Declarations
 void loadData();
+void initObjects();

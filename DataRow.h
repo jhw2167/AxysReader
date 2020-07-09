@@ -36,7 +36,7 @@ private:
 				not include an additional delimitter
 		*/
 
-		cout << "calling method: " <<  dRow.reads.size() << endl;
+		//cout << "calling dataRow IO: " <<  dRow.reads.size() << endl;
 
 		const auto* sep = "";
 		const auto invBlank = ",";
@@ -90,6 +90,7 @@ private:
 				if (nextChar == '"') {
 					ssLine >> sep;
 					std::getline(ssLine, val, '"');
+					val = '"' + val + '"';
 					ssLine >> sep;
 					/*
 						If the column has a ',' in it already, we use

@@ -11,7 +11,7 @@ Cash & Equivalents,,,,,,,
 
 KEYWORDS:
 1	<- Number of lines keywords take up, right now its ONE, do NOT delete this line 
-Cash & Equivalents, Equities, Fixed Income,
+Cash & Equivalents,Equities,Fixed Income,
 
 Subsection Footer:
 1
