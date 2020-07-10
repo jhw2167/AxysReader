@@ -36,7 +36,7 @@ private:
 				not include an additional delimitter
 		*/
 
-		//cout << "calling dataRow IO: " <<  dRow.reads.size() << endl;
+		//cout << "calling dataRow Ostream: " <<  dRow.reads.size() << endl;
 
 		const auto* sep = "";
 		const auto invBlank = ",";
@@ -61,6 +61,8 @@ private:
 
 		std::string streamErr = "ERROR: in DataRow class overloaded EXTRACTION operator>>\n";
 		streamErr += "the input stream is in a failed state, no processing can take place...\n";
+
+		//cout << "Made it to datarow Istream: " << endl;
 
 		//Check if stream is initially in failed state
 		if (!is) {
@@ -136,7 +138,6 @@ private:
 		}
 
 		return is;
-
 	}
 	//END EXTRACTION STREAM OPERATOR
 

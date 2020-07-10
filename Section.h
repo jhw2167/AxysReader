@@ -53,15 +53,20 @@ private:
 	std::vector<DataRow> rows;
 	int numRows;
 
-	std::vector<Section*> subs;
+	std::vector<Section> subs;
 	int numSubs;
 	//All subsections of a given section
 
-	hf_config* details;
+	const hf_config* details;
+	const std::vector<hf_config>* allDetails;
 	//hf_config is a class defined in hf_config.h that 
 	//houses details of header and footer for each
 	//section type
 
+
+	/*  Private Functions  */
+	void readRows(std::istream& is);
+	void readSubsections(std::istream& is);
 
 	/*  Friend methods: File Stream Operators  */
 
@@ -71,13 +76,13 @@ private:
 			Output dataRows to stream, comma delimited as per .CSV format
 			simply calls the dataRow "insertion" operator.
 		*/
-		//cout << "calling SECTION IO: " << sec.rows.size() << endl;
+		cout << "calling SECTION IO, size is: " << sec.rows.size() << endl;
 
 		const char newL = '\n';
 		char first = '\0';
 
 		for (const auto& row : sec.rows) {
-			os << first << row;
+			os << row << endl;
 			first = newL;
 		}
 
@@ -90,7 +95,7 @@ private:
 	inline friend std::istream& operator>>(std::istream& is, Section& sec)
 	{
 		std::string line;
-		//declare generic string for getting lines
+		//declare generic string for getting lines		
 
 		if (sec.details->hasHeader) {
 
@@ -99,36 +104,23 @@ private:
 			sec.header.push_back(line);
 			sec.secName = line;
 
+			cout << "First line of header is: " << line << endl;
+
 			for (size_t i = 0; i != sec.details->headLength - 1; i++) {
+
 				std::getline(is, line);
 				sec.header.push_back(line);
 			}
-
+			cout << endl;
 		}
 
-		std::getline(is, line);
-		bool readNext = !(line == sec.details->stopper ||
-			sec.containsKeyword(line));
+		//cout << "Made it to Section Istream: " << endl;
 
-		while (readNext) {
-
-			/*
-				Read our data into the DataRow Object then
-				call addRow function to add it to
-				our rows vector for this section.
-			*/
-
-			DataRow row;
-
-			std::stringstream ssLine(line);
-			ssLine >> row;
-			sec.addRow(row);
-
-			std::getline(is, line);
-			readNext = !(line == sec.details->stopper ||
-				sec.containsKeyword(line));
-			//If next Line = report footer or header, loop terminates as
-			//there are no more rows to read in this section
+		if (sec.level == 1) {
+			sec.readRows(is);
+		}
+		else {
+			sec.readSubsections(is);
 		}
 
 		if (sec.details->hasFooter) {
@@ -136,8 +128,10 @@ private:
 
 			for (size_t i = 0; i != sec.details->footLength - 1; i++) {
 				std::getline(is, line);
-				sec.header.push_back(line);
+				//cout << "line of footer is: " << line << endl;
+				sec.footer.push_back(line);
 			}
+			cout << endl;
 		}
 
 		return is;
@@ -149,11 +143,20 @@ private:
 public:
 
 	/*  Constructor  */
-	Section(hf_config* dts, int lvl);
+	Section(const hf_config* dts, int lvl);
+
+	
+	Section(const std::vector<hf_config>* aDts, int lvl);
+
+
+	/*  Initializers  */
+	void initVars(int lvl);
 
 
 	/*  Modifiers  */
-	void setDetails(hf_config *dts);
+	void setDetails(const hf_config *dts);
+
+	void setAllDetails(const std::vector<hf_config>* aDts);
 
 
 	/*  Accessors  */

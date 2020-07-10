@@ -45,8 +45,11 @@ private:
 	int levels;
 
 	/*  Other Functions -- Private  */
-	void readFiles();
 	void initConfigs();
+	void readFiles();
+	void aggregate();
+	void writeFiles();
+	void deleteSecs();
 
 public:
 
@@ -54,7 +57,9 @@ public:
 	Menu();
 
 	/*  Other Functions  */
-	void mainMenu(short opt);
+	void mainMenu(int opt);
+
+	const bool exit() const;
 
 
 };

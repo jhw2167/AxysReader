@@ -18,6 +18,7 @@
 class hf_config
 {
 public:
+	int level;
 	const static std::string breaker;
 	std::string fileName;
 	// breaker is "&&&&&" string that delineates 
@@ -39,9 +40,9 @@ public:
 	bool hasFooter;
 
 	/*  Constructor  */
-	hf_config(hf_config& hf);
+	hf_config(hf_config& hf, int lvl);
 
-	hf_config(std::ifstream& toRead);
+	hf_config(std::ifstream& toRead, int lvl);
 
 
 	/*  Initializers  */

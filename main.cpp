@@ -2,44 +2,34 @@
 
 //Implementation file of main.h AxysReader c++ program
 
+
+/*
+	The MainMenu function of our Menu object is responsible for running the program:
+		- Defining the user's options and allowing them to navigate the code
+			from the command line
+
+		-The user stays in the program until the menu.exit() function is
+			updated to true, either by the user or by the program
+
+
+
+*/
+
+
+
 int main(int argc, const char* argv[])
 {
-	//Lets get a name for the dile and open it up via cmd line
-	std::string fileName = "";
-
 	try
 	{
-		//initialize all static member variables in our objects from files
-		initObjects();
-		
-		
+		Menu menu;
+		static int count = 0;
+		int choice = 0;
 
-		if (inStream)
-		{
-			std::vector<Section> dRows;
-			
-			for (int i = 0; i < 3; i++) {
-				Section row;
-
-				inStream >> row;
-				dRows.push_back(row);
-			}
-
-			
-
-			//Read Data Back
-			cout << endl << endl << "READ DATA BACK: " << endl << endl;
-			
-			std::ofstream output("HOLDNGS.csv");
-			//declare output File Stream
-
-			for (auto i : dRows) {
-				output << i << endl;
-			}
-
+		while (!menu.exit()) {
+			std::cin >> choice;
+			getchar();
+			menu.mainMenu(choice);
 		}
-		else
-			cout << "Not in stream" << endl;
 		
 	}
 	catch (...) {
@@ -51,31 +41,4 @@ int main(int argc, const char* argv[])
 	getchar();
 
 	return 0;
-}
-
-
-
-void initObjects()
-{
-	try
-	{
-		Section sub;
-		std::cout << "Initing subs now: " << std::endl << endl;
-		sub.initSubs();
-
-	}
-	catch (missing_arguments& ma)
-	{
-		std::cout << "Missing arguments exception caught in " 
-			<< "initObjects, rethrowing: " << endl;
-		throw ma;
-	}
-}
-
-void loadData()
-{
-
-
-
-
 }

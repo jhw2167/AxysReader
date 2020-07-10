@@ -11,12 +11,14 @@ const std::string hf_config::breaker = "&&&&&";
 	/*  Constructor  */
 
 //Init from hf_config object
-hf_config::hf_config(hf_config& hf) {
+hf_config::hf_config(hf_config& hf, int lvl) {
 	setMembers(hf);
+	level = lvl;
 }
 
 //Init from file
-hf_config::hf_config(std::ifstream& toRead) {
+hf_config::hf_config(std::ifstream& toRead, int lvl) {
+	level = lvl;
 	config(toRead);
 }
 
@@ -31,8 +33,9 @@ void hf_config::config(std::ifstream& toRead)
 	//Set filename and "breaks" where the program reads
 	//its init information from the program
 
-	std::cout << "Initializing Sections" << endl;
-
+	//read through document until we get to proper level... 1, 2...
+	std::string lvlString = "Level: " + std::to_string(level);
+	readThrough(toRead, lvlString);
 
 	//Read through file until first "break" 
 	//indicates we have arrived at our header
@@ -54,6 +57,7 @@ void hf_config::config(std::ifstream& toRead)
 
 void hf_config::initHeader(std::ifstream& is)
 {
+
 	//First read in bool that inidicates if we HAVE a header
 	is >> hasHeader;
 
@@ -208,9 +212,25 @@ std::ifstream& hf_config::readThrough(std::ifstream& is, std::string& brk)
 
 	std::string comp;
 	while (getline(is, comp)) {
-		if (comp == brk)
+		if (comp == brk) {
 			break;
+		}	
 	}
-
 	return is;
 }
+
+/*
+
+string mystring;
+	string next1;
+	string next2;
+	std::getline(is, mystring);
+	std::getline(is, next1);
+	std::getline(is, next2);
+	cout << "innit Header, where are we in stream: "
+		<< mystring << endl
+		<< next1 << endl
+		<< next2 << endl;
+
+
+*/
