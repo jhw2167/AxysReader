@@ -1,10 +1,7 @@
 #pragma once
 
 //Project Includes
-#include "Exceptions.h"
-#include "DateTime.h"
-#include "DataRow.h"
-#include "Section.h"
+#include "Menu.h"
 
 /*
 	"AxysReader" C++ program to convert Excel Friendly Axys Finance report

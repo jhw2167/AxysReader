@@ -2,6 +2,7 @@
 
 //project includes
 #include "DataRow.h"
+#include "hf_config.h"
 
 /*
 	Section class devoted to handling Sections within a
@@ -27,49 +28,55 @@
 
 */
 
+
+/*
+	
+*/
+
 class Section
 {
 private:
-	const static std::string breaker;
-	const static std::string fileName;
-	// breaker is "&&&&&" string that delineates 
-	//header footers in SectionConfig
 
-	string subName;
-	static vector<std::string> keywords;
-	//Section name and string of keywords that
-	//program looks for to identify headers
+	int level;
+	//Section level is higher the further "up" it is on the hierarchy
+	//datarows - level 0
+	//Subsections (equities, Cash and Equivalents) - level 1
+	//Client Portfolio headers - level 2
+
+	std::string secName;
+	//Mostly used for subsections that have select few
+	//keyword names like "Equities"
 
 	vector<std::string> header;
 	vector<std::string> footer;
-	static std::string stopper;
-	//First line of footer, responsible for stopping dataRow Reads
-	//MUST BE GENERAL TO ALL SECTION FOOTERS
-
-	static int headLength;
-	static int footLength;
-
-	static bool hasHeader;
-	static bool hasFooter;
-
+	
 	std::vector<DataRow> rows;
 	int numRows;
+
+	std::vector<Section*> subs;
+	int numSubs;
+	//All subsections of a given section
+
+	hf_config* details;
+	//hf_config is a class defined in hf_config.h that 
+	//houses details of header and footer for each
+	//section type
 
 
 	/*  Friend methods: File Stream Operators  */
 
-	inline friend std::ostream& operator<<(std::ostream& os, const Section& sub)
+	inline friend std::ostream& operator<<(std::ostream& os, const Section& sec)
 	{
 		/*
 			Output dataRows to stream, comma delimited as per .CSV format
 			simply calls the dataRow "insertion" operator.
 		*/
-		//cout << "calling SECTION IO: " << sub.rows.size() << endl;
+		//cout << "calling SECTION IO: " << sec.rows.size() << endl;
 
 		const char newL = '\n';
 		char first = '\0';
 
-		for (const auto& row : sub.rows) {
+		for (const auto& row : sec.rows) {
 			os << first << row;
 			first = newL;
 		}
@@ -80,28 +87,28 @@ private:
 
 
 	//Start EXTRACTION operator
-	inline friend std::istream& operator>>(std::istream& is, Section& sub)
+	inline friend std::istream& operator>>(std::istream& is, Section& sec)
 	{
 		std::string line;
 		//declare generic string for getting lines
 
-		if (sub.hasHeader) {
+		if (sec.details->hasHeader) {
 
 			//get first line for header name:
 			std::getline(is, line);
-			sub.header.push_back(line);
-			sub.subName = line;
+			sec.header.push_back(line);
+			sec.secName = line;
 
-			for (size_t i = 0; i != sub.headLength - 1; i++) {
+			for (size_t i = 0; i != sec.details->headLength - 1; i++) {
 				std::getline(is, line);
-				sub.header.push_back(line);
+				sec.header.push_back(line);
 			}
 
 		}
 
 		std::getline(is, line);
-		bool readNext = !(line == sub.stopper ||
-			sub.containsKeyword(line));
+		bool readNext = !(line == sec.details->stopper ||
+			sec.containsKeyword(line));
 
 		while (readNext) {
 
@@ -115,21 +122,21 @@ private:
 
 			std::stringstream ssLine(line);
 			ssLine >> row;
-			sub.addRow(row);
+			sec.addRow(row);
 
 			std::getline(is, line);
-			readNext = !(line == sub.stopper ||
-				sub.containsKeyword(line));
+			readNext = !(line == sec.details->stopper ||
+				sec.containsKeyword(line));
 			//If next Line = report footer or header, loop terminates as
 			//there are no more rows to read in this section
 		}
 
-		if (sub.hasFooter) {
+		if (sec.details->hasFooter) {
 			//if section has a footer, read it in.
 
-			for (size_t i = 0; i != sub.footLength - 1; i++) {
+			for (size_t i = 0; i != sec.details->footLength - 1; i++) {
 				std::getline(is, line);
-				sub.header.push_back(line);
+				sec.header.push_back(line);
 			}
 		}
 
@@ -142,27 +149,23 @@ private:
 public:
 
 	/*  Constructor  */
-	Section();
+	Section(hf_config* dts, int lvl);
 
-	/*  Initializers  */
-
-	void initSubs();
-
-	void initHeader(std::ifstream& is);
-
-	void initFooter(std::ifstream& is);
-
-	void initKeywords(std::ifstream& is);
 
 	/*  Modifiers  */
+	void setDetails(hf_config *dts);
+
+
 	/*  Accessors  */
+	const hf_config& getDetails();
+
 
 	/* Other Functions  */
 	void addRow(const DataRow& r);
 
 	const bool containsKeyword(const std::string& check) const;
 
-	std::ifstream& readThrough(std::ifstream& is, std::string& brk);
+	//std::ifstream& readThrough(std::ifstream& is, std::string& brk);
 
 
 	/*  Destructors  */

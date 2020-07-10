@@ -1,7 +1,31 @@
+2
 *****SUBSECTION CONFIG FILE USED BY AXYSREADER PROGRAM*****
 -----------------------------------------------------------
 ******PLEASE EDIT CAREFULLY, LINE NUMBERS ARE PRECISE******
 
+Level: 1
+Subsection Header:
+1
+&&&&&
+Cash & Equivalents,,,,,,,
+------------------,,,,,,,
+&&&&&
+
+KEYWORDS:
+1	<- Number of lines keywords take up, right now its ONE, do NOT delete this line 
+Cash & Equivalents,Equities,Fixed Income,
+
+Subsection Footer:
+1
+&&&&&
+,,,,,---------------  ---------------               ,,
+,,,,,944412.07,944412.07,
+,,,,,,,
+&&&&&
+
+#######################################################
+
+Level: 2
 Subsection Header:
 1
 &&&&&
