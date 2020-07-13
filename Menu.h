@@ -49,7 +49,6 @@ private:
 	void readFiles();
 	void aggregate();
 	void writeFiles();
-	void deleteSecs();
 
 public:
 

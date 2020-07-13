@@ -142,6 +142,9 @@ private:
 	//END EXTRACTION STREAM OPERATOR
 
 
+	/*  Other Private Functions  */
+
+
 	//End Stream Operators
 
 public:
@@ -160,6 +163,8 @@ public:
 
 	/*  Functions  */
 	void pushBackReads(const std::string &str);
+
+	void aggregate();
 
 
 	/*  Destructor  */

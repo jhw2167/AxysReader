@@ -9,6 +9,7 @@
 Menu::Menu() {
 	exMenu = false;
 	configFile = "Sections.txt";
+	writeFile = "HOLDNGS.CSV";
 	levels = 0;
 
 	mainMenu(0);
@@ -40,8 +41,6 @@ void Menu::mainMenu(int opt)
 
 		aggregate();
 		writeFiles();
-
-		//deleteSecs();
 		break;
 
 	case 2:
@@ -77,7 +76,7 @@ void Menu::initConfigs()
 {
 	try
 	{
-		std::cout << "Opening config file: " << configFile << endl;
+		//std::cout << "Opening config file: " << configFile << endl;
 		ifstream inStream(configFile);
 		//configFile is initialized to filename "Sections.txt" in
 		//the constructor of this class, if that file is lost or
@@ -90,8 +89,6 @@ void Menu::initConfigs()
 		cout << "Levels are: " << levels << endl;
 
 		for (size_t i = 0; i != levels; i++) {
-			cout << "calling for i: " << i << endl;
-
 			hf_config newConfig(inStream, i+1);
 			configs.push_back(newConfig);
 		}
@@ -143,6 +140,8 @@ void Menu::readFiles()
 
 		while (!inStream.eof())
 		{
+			//cout << "Reading Top Stream section from readFiles() " << endl << endl;
+
 			//generally its bad practice to use eof, 
 			//but it suits our needs here
 
@@ -187,11 +186,17 @@ void Menu::readFiles()
 
 void Menu::aggregate()
 {
+	/*
+		Here we direct methods that aggregate the "reads" vector columns
+		into the "writes" vector
+	*/
+
+	
 }
 
 void Menu::writeFiles()
 {
-	std::ofstream output("HOLDNGS.txt");
+	std::ofstream output(writeFile);
 
 	for (auto i : wrapper) {
 		output << i;
@@ -199,12 +204,5 @@ void Menu::writeFiles()
 	exMenu = true;
 }
 
-void Menu::deleteSecs()
-{
-	for (auto i : wrapper) {
-		//delete i;
-	}
-
-}
 
 

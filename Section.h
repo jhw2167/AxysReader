@@ -76,15 +76,24 @@ private:
 			Output dataRows to stream, comma delimited as per .CSV format
 			simply calls the dataRow "insertion" operator.
 		*/
-		cout << "calling SECTION IO, size is: " << sec.rows.size() << endl;
+		//cout << "calling SECTION OSTREAM for level " << sec.level <<
+			//", size is: " << sec.rows.size() << endl;
 
-		const char newL = '\n';
-		char first = '\0';
+		if (sec.level == 1) {
 
-		for (const auto& row : sec.rows) {
-			os << row << endl;
-			first = newL;
+			for (const auto& row : sec.rows) {
+				os << row << endl;
+			}
+
 		}
+		else {
+
+			for (const auto& sub : sec.subs) {
+				os << sub;
+			}
+		}
+
+		
 
 		return os;
 	}
@@ -126,6 +135,9 @@ private:
 		if (sec.details->hasFooter) {
 			//if section has a footer, read it in.
 
+			//cout << "First line of footer is: " << line << endl;
+			sec.footer.push_back(line);
+
 			for (size_t i = 0; i != sec.details->footLength - 1; i++) {
 				std::getline(is, line);
 				//cout << "line of footer is: " << line << endl;
@@ -143,6 +155,8 @@ private:
 public:
 
 	/*  Constructor  */
+	Section();
+
 	Section(const hf_config* dts, int lvl);
 
 	
