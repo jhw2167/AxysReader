@@ -37,6 +37,8 @@ private:
 	//primary file to write too after reading Axys report
 	//by default this will be initialized to "report.csv"
 
+	Lookups lookupFiles;
+
 	std::vector<Section> wrapper;
 	//The entire .csv doc will wrapped in one sections vector
 
@@ -49,6 +51,7 @@ private:
 	void readFiles();
 	void aggregate();
 	void writeFiles();
+	std::ifstream& readThrough(std::ifstream& is, std::string& brk);
 
 public:
 

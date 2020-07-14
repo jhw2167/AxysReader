@@ -14,6 +14,84 @@
 #include "DateTime.h"
 
 
+
+/*  Common Stucts - not directly related to DataRow Class  
+		-lookups is a single object that holds all fileNames
+		needed for lookup operations
+
+*/
+struct Lookups {
+	std::string holdNum;
+	std::string ticker;
+	std::string val_SP;
+	std::string deleteFile;
+	const std::string folder = "configs/";
+
+	void readFileNames(std::ifstream& inFile)
+	{
+
+		/*
+			function will enter after LOOKUP FILES:
+			section header was found and will read in 
+			the remainder of the file names
+
+			Sample format:
+			LookUp Ticker: tickerL.csv
+		*/
+		std::string discard;
+		char c; //holds space character
+
+		//read hold_num file
+		std::getline(inFile, discard, ':');
+		inFile >> holdNum;		//stops at new line;
+		holdNum = folder + holdNum;
+
+		//read ticker file
+		std::getline(inFile, discard, ':');
+		inFile >> ticker;		
+		ticker = folder + ticker;
+
+		//read val_SP file
+		std::getline(inFile, discard, ':');
+		inFile >> val_SP;
+		val_SP = folder + val_SP;
+
+		//read delete file
+		std::getline(inFile, discard, ':');
+		inFile >> deleteFile;
+		deleteFile = folder + deleteFile;
+		
+		cout << "Ticker File is: " << ticker << endl;
+		//cout << "holdNum File is: " << holdNum << endl;
+		//cout << "val_sp File is: " << val_SP << endl;
+		//cout << "Delete File is: " << deleteFile << endl;
+	}
+
+};
+/*
+	Stores the lookupfile names where to find information
+	on ticker, Delete, hold_number and historic SP_values
+*/
+
+
+struct SectionVals {
+	std::string nowDate;
+
+	std::string cash;
+	std::string fixed;
+	std::string total_port;
+
+	std::string holdNum;
+	std::string deleteNum;
+	double sp_current;			//stored as number for calculations
+	double sp_dated;			//Stored as number for calculations
+};
+//Even numbers and dates need to be stored as
+//strings because thats the vector type that holds
+//all read, write data, and thats how they are written
+//to the file
+
+
 class DataRow
 {
 private:
@@ -21,9 +99,10 @@ private:
 	static int readCols;
 	static int writeCols;
 
-	vector<string> reads;
-	vector<string> writes;
+	std::vector<std::string> reads;
+	std::vector<std::string> writes;
 
+	std::string clientName;
 
 	/*  Friend methods: File Stream Operators  */
 
@@ -114,7 +193,6 @@ private:
 			}
 
 		}
-
 		catch (std::invalid_argument& ia1)
 		{
 			//catches invalid argument exception if stream cannot be read
@@ -156,6 +234,8 @@ public:
 	/*  Accessors  */
 	int getWriteCols();
 
+	std::string getClientName();
+
 
 	/*  Modifiers  */
 	void setWriteCols(const int wc);
@@ -164,7 +244,7 @@ public:
 	/*  Functions  */
 	void pushBackReads(const std::string &str);
 
-	void aggregate();
+	void aggregate(const Lookups& ls, SectionVals& sv);
 
 
 	/*  Destructor  */

@@ -1,4 +1,5 @@
 #include "main.h"
+#define _CRT_SECURE_NO_WARNINGS
 
 //Implementation file of main.h AxysReader c++ program
 
@@ -27,7 +28,6 @@ int main(int argc, const char* argv[])
 
 		while (!menu.exit()) {
 			std::cin >> choice;
-			getchar();
 			menu.mainMenu(choice);
 		}
 		
@@ -36,7 +36,7 @@ int main(int argc, const char* argv[])
 		//Error handling
 		cout << "Unkown exception caught in Main, program exiting";
 	}
-
+	
 
 	getchar();
 

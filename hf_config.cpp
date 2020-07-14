@@ -218,19 +218,3 @@ std::ifstream& hf_config::readThrough(std::ifstream& is, std::string& brk)
 	}
 	return is;
 }
-
-/*
-
-string mystring;
-	string next1;
-	string next2;
-	std::getline(is, mystring);
-	std::getline(is, next1);
-	std::getline(is, next2);
-	cout << "innit Header, where are we in stream: "
-		<< mystring << endl
-		<< next1 << endl
-		<< next2 << endl;
-
-
-*/

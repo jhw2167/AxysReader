@@ -1,4 +1,5 @@
 #pragma once
+//gets rid of annoying ctime erros
 
 //Project Includes
 #include "Menu.h"
@@ -28,7 +29,3 @@
 	using std::vector;
 
 */
-
-//Forward Function Declarations
-void loadData();
-void initObjects();

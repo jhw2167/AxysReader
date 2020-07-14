@@ -43,6 +43,7 @@ private:
 	//Subsections (equities, Cash and Equivalents) - level 1
 	//Client Portfolio headers - level 2
 
+	std::string clientName;
 	std::string secName;
 	//Mostly used for subsections that have select few
 	//keyword names like "Equities"
@@ -63,10 +64,17 @@ private:
 	//houses details of header and footer for each
 	//section type
 
+	std::vector<std::string> summaryVals;
+	//holds summary vls for the end of each section
+
 
 	/*  Private Functions  */
 	void readRows(std::istream& is);
 	void readSubsections(std::istream& is);
+	void readSummaryvals();
+
+	void addHoldNumber(const std::string& holdNumFile, SectionVals& sv);
+	void addDeleteValue(const std::string& deleteFile, SectionVals& sv);
 
 	/*  Friend methods: File Stream Operators  */
 
@@ -113,14 +121,13 @@ private:
 			sec.header.push_back(line);
 			sec.secName = line;
 
-			cout << "First line of header is: " << line << endl;
+			//cout << "First line of header is: " << line << endl;
 
 			for (size_t i = 0; i != sec.details->headLength - 1; i++) {
 
 				std::getline(is, line);
 				sec.header.push_back(line);
 			}
-			cout << endl;
 		}
 
 		//cout << "Made it to Section Istream: " << endl;
@@ -143,8 +150,9 @@ private:
 				//cout << "line of footer is: " << line << endl;
 				sec.footer.push_back(line);
 			}
-			cout << endl;
 		}
+
+		sec.readSummaryvals();
 
 		return is;
 	}
@@ -175,6 +183,7 @@ public:
 
 	/*  Accessors  */
 	const hf_config& getDetails();
+	std::string getClientName();
 
 
 	/* Other Functions  */
@@ -182,7 +191,11 @@ public:
 
 	const bool containsKeyword(const std::string& check) const;
 
-	//std::ifstream& readThrough(std::ifstream& is, std::string& brk);
+	void aggregateSecs(const Lookups& lks, SectionVals& sv);
+
+	void aggregateRows(const Lookups& lks, SectionVals& sv);
+
+	std::ifstream& readThrough(std::ifstream& is, std::string& brk, char c = '\n');
 
 
 	/*  Destructors  */

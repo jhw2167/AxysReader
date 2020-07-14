@@ -26,6 +26,11 @@ int DataRow::getWriteCols () {
 	return writeCols;
 }
 
+std::string DataRow::getClientName() {
+	return reads.at(0);
+	//client name should be at index 0 of read column
+}
+
 
 	/*  Modifiers  */
 void DataRow::setWriteCols(const int wc) {
@@ -39,11 +44,12 @@ void DataRow::pushBackReads(const std::string &str) {
 	reads.push_back(str);
 }
 
-void aggregate()
+void DataRow::aggregate(const Lookups& ls, SectionVals& sv)
 {
 	/*  
 		DataRow::Aggregate transforms all read data to write data
 	*/
+
 
 	//Add Ticker (by Lookup)
 
