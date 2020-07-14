@@ -1,4 +1,7 @@
 Debug/
+configs/
+inputs/
+outputs/
 AxysReader.vcxproj
 AxysReader.vcxproj.filters
 AxysReader.vcxproj.user
