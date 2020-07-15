@@ -21,6 +21,7 @@
 
 //other includes
 #include <vector>
+#include <algorithm>
 
 
 //Using Statements

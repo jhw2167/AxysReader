@@ -68,9 +68,18 @@ std::string Section::getClientName() {
 	return clientName;
 }
 
+std::string Section::getSecName() {
+	return secName;
+}
+
+const std::vector<string>& Section::getSummaryVals() {
+	return summaryVals;
+}
+
 
 
 /*  Other Functions  */
+
 void Section::addRow(const DataRow& r) {
 	rows.push_back(r);
 }
@@ -94,6 +103,7 @@ const bool Section::containsKeyword(const std::string& sample) const
 
 void Section::aggregateSecs(const Lookups& lks, SectionVals& sv) 
 {
+
 	if (level > 1)
 	{
 		//aggregate section values then rows
@@ -102,24 +112,48 @@ void Section::aggregateSecs(const Lookups& lks, SectionVals& sv)
 		addHoldNumber(lks.holdNum,sv);
 		
 		//Total_Port Value
-		try
-		{
+		try {
 			sv.total_port = summaryVals.at(0);
 		}
-		catch (const std::exception& e1)
+		catch (const std::out_of_range& e1)
 		{
 			cout << "Out of range error caught in summaryVals.at(0)" <<
 				" footer not properly exported, error message:  " <<
 				endl << endl << e1.what() << endl;
 			sv.total_port = "0";
 		}
-		
-		cout << "total port value is: " << sv.total_port << endl;;
 
 		//delete Value
 		addDeleteValue(lks.deleteFile, sv);
 
-		//for subsections
+		//for subsection Cash, Equity and Fixed Income Values 
+		try
+		{
+			for (auto& sub : subs) {
+				size_t size = sub.getSummaryVals().size();
+
+				if (sub.getSecName() == "Cash & Equivalents" && size > 0) {
+					sv.cash = sub.getSummaryVals().at(0);
+				}
+				else if (sub.getSecName() == "Fixed Income" && size > 0) {
+					sv.fixed = sub.getSummaryVals().at(0);
+				}
+				else if (sub.getSecName() == "Equities" && size > 0) {
+					sv.equity = sub.getSummaryVals().at(0);
+				}
+			}
+
+		}
+		catch (const std::out_of_range& or1)
+		{
+			cout << "Out of range error caught in loading section values" <<
+				" footer not properly exported, error message:  " <<
+				endl << endl << or1.what() << endl;
+		}
+
+		//Call aggregate secs for each subsection, which
+		//will in turn call aggregate rows
+
 		for (auto& sub : subs) {
 			sub.aggregateSecs(lks, sv);
 		}
@@ -128,37 +162,16 @@ void Section::aggregateSecs(const Lookups& lks, SectionVals& sv)
 	else {
 		aggregateRows(lks, sv);
 	}
-		
-		
-
-	//Build Major Section values
-
 	
-
-	//Call aggRows function
-
 }
-
 
 void Section::aggregateRows(const Lookups& lks, SectionVals& sv)
 {
-	//Build Minor Section values
-	
-	//Cash
-
-	//Fixed Income
-
-	//Equities
-
-
-
-	//Call aggregateData for DataRows
-	for (auto row : rows) {
-		row.aggregate(lks, sv);
+	//Call aggregateData for DataRows	
+	for (auto& row : rows) {
+		row.aggregate(lks, sv, secName);
 	}
-
 }
-
 
 std::ifstream& Section::readThrough(std::ifstream& is, std::string& brk, char c)
 {

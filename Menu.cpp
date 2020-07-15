@@ -67,15 +67,20 @@ void Menu::mainMenu(int opt)
 		}
 	}
 	catch (file_open_error &foe1) {
-		cout << "Please select another menu option: " << endl;
+		std::cout << "could not open file, " << foe1.what() <<
+			" exception rethrowing and program ending " << endl;
+		throw foe1;
+	}
+	catch (std::out_of_range& or1) {
+		std::cout << "Out of range eror: " << endl;
+		std::cout << or1.what() << endl;
 	}
 	catch (...)
 	{
-		cout << "Unknown exceoption caught in main menu" << endl;
+		cout << "Unknown exception caught in main menu" << endl;
 		throw;
 	}
 	
-
 }
 
 const bool Menu::exit() const {

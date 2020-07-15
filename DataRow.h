@@ -79,12 +79,26 @@ struct SectionVals {
 
 	std::string cash;
 	std::string fixed;
+	std::string equity;
 	std::string total_port;
 
 	int holdNum;
 	std::string deleteNum;
 	double sp_current;			//stored as number for calculations
 	double sp_dated;			//Stored as number for calculations
+
+	SectionVals() :
+		cash("0"),
+		fixed("0"),
+		equity("0"),
+		total_port("0"),
+		holdNum(0),
+		deleteNum("0"),
+		sp_current(0.0),
+		sp_dated(0.0)
+
+	{
+	}
 };
 //Even numbers and dates need to be stored as
 //strings because thats the vector type that holds
@@ -104,10 +118,13 @@ private:
 
 	std::string clientName;
 
+	enum readColnames{CLIENT = 0, SECURITY, SEC_SYMBOL, UNIT_COST,
+	DATE, MRKT_VAL, TOT_COST, SHARES};
+
 	/*  Friend methods: File Stream Operators  */
 
 	// BEGIN INSERTION STREAM OPERATOR
-	inline friend std::ostream & operator<<(std::ostream & os, const DataRow & dRow)
+	inline friend std::ostream & operator<<(std::ostream& os, const DataRow & dRow)
 	{
 		/*
 			Output columns to stream, comma delimited as per .CSV format
@@ -115,16 +132,17 @@ private:
 				not include an additional delimitter
 		*/
 
-		//cout << "calling dataRow Ostream: " <<  dRow.reads.size() << endl;
+		//cout << "calling dataRow Ostream: " <<  dRow.writes.size() << endl;
 
 		const auto* sep = "";
 		const auto invBlank = ",";
 
-		for (const auto& col : dRow.reads) {
+		for (const auto& col : dRow.writes) {
 			os << sep << col;
 			sep = invBlank;
-		}
 
+			//cout << "value is: " << col;
+		}
 		return os;
 	}
 	//END INSERTION STREAM OPERATOR
@@ -244,7 +262,9 @@ public:
 	/*  Functions  */
 	void pushBackReads(const std::string &str);
 
-	void aggregate(const Lookups& ls, SectionVals& sv);
+	void aggregate(const Lookups& lks, SectionVals& sv, std::string secName);
+
+	std::string searchTicker(const std::string& fileName);
 
 
 	/*  Destructor  */

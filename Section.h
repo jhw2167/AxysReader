@@ -87,7 +87,7 @@ private:
 		//cout << "calling SECTION OSTREAM for level " << sec.level <<
 			//", size is: " << sec.rows.size() << endl;
 
-		if (sec.level == 1) {
+		if (sec.level == 1 && sec.secName == "Equities") {
 
 			for (const auto& row : sec.rows) {
 				os << row << endl;
@@ -119,9 +119,10 @@ private:
 			//get first line for header name:
 			std::getline(is, line);
 			sec.header.push_back(line);
-			sec.secName = line;
+			int index = std::min(line.find_first_of(','), line.size());
+			sec.secName = line.substr(0, index);
 
-			//cout << "First line of header is: " << line << endl;
+			//cout << "First line of header is: " << sec.secName << endl;
 
 			for (size_t i = 0; i != sec.details->headLength - 1; i++) {
 
@@ -138,14 +139,11 @@ private:
 		}
 		else {
 			sec.readSubsections(is);
-			cout << "Emerging from read subsections, check is: " << check << endl;
 		}
 		
 
 		if (check && sec.details->hasFooter) {
 			//if section has a footer, read it in.
-			
-
 			//cout << "Level is: " << sec.level << endl;
 
 			for (size_t i = 0; i != sec.details->footLength - 1; i++) {
@@ -153,7 +151,6 @@ private:
 				//cout << "line of footer is: " << line << endl;
 				sec.footer.push_back(line);
 			}
-			cout << endl;
 		}
 
 		sec.readSummaryvals();
@@ -187,7 +184,12 @@ public:
 
 	/*  Accessors  */
 	const hf_config& getDetails();
+
 	std::string getClientName();
+
+	std::string getSecName();
+
+	const std::vector<string>& getSummaryVals();
 
 
 	/* Other Functions  */
