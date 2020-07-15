@@ -81,7 +81,7 @@ struct SectionVals {
 	std::string fixed;
 	std::string total_port;
 
-	std::string holdNum;
+	int holdNum;
 	std::string deleteNum;
 	double sp_current;			//stored as number for calculations
 	double sp_dated;			//Stored as number for calculations

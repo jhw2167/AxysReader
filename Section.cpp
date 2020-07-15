@@ -102,10 +102,22 @@ void Section::aggregateSecs(const Lookups& lks, SectionVals& sv)
 		addHoldNumber(lks.holdNum,sv);
 		
 		//Total_Port Value
-		sv.total_port = summaryVals.at(0);
+		try
+		{
+			sv.total_port = summaryVals.at(0);
+		}
+		catch (const std::exception& e1)
+		{
+			cout << "Out of range error caught in summaryVals.at(0)" <<
+				" footer not properly exported, error message:  " <<
+				endl << endl << e1.what() << endl;
+			sv.total_port = "0";
+		}
+		
+		cout << "total port value is: " << sv.total_port << endl;;
 
 		//delete Value
-		addDeleteValue(lks.holdNum, sv);
+		addDeleteValue(lks.deleteFile, sv);
 
 		//for subsections
 		for (auto& sub : subs) {
@@ -170,7 +182,7 @@ std::ifstream& Section::readThrough(std::ifstream& is, std::string& brk, char c)
 
 /*  Other Private Functions  */
 
-void Section::readRows(std::istream& is)
+const bool Section::readRows(std::istream& is)
 {
 	std::string line;
 
@@ -196,9 +208,17 @@ void Section::readRows(std::istream& is)
 		//If next Line = report footer or header, loop terminates as
 		//there are no more rows to read in this section
 
+		bool blank = (line.find_first_not_of(',') == line.npos);
+		
+		if (blank && (line != details->stopper)) {
+			return false;
+		}
+		//Also, if next line is blank and the footer stopper
+		//is NOT blank, there is no footer section
+		//this occurs in Axys reader section when there is 1 row/section
+		
 		if (readNext)
 		{
-			//don't run this in first loop
 			DataRow row;
 
 			std::stringstream ssLine(line);
@@ -207,7 +227,7 @@ void Section::readRows(std::istream& is)
 			numRows++;
 		}
 	}
-
+	return details->hasFooter;
 }
 
 void Section::readSubsections(std::istream& is)
@@ -224,7 +244,7 @@ void Section::readSubsections(std::istream& is)
 	const int newLevel = level - 1;
 	bool readNext = true;
 	bool failed = !std::getline(is, line);
-	numSubs = -1;
+	numSubs = 0;
 
 
 	while (readNext && !failed)
@@ -232,16 +252,23 @@ void Section::readSubsections(std::istream& is)
 
 		fullLine = "";
 		bool hitStopper = false;
+		bool blankLine = false;
 		while (!hitStopper && !failed)
 		{
 			fullLine = fullLine + line + '\n';
 			failed = !std::getline(is, line);
-			hitStopper = (line == allDetails->at(newLevel - 1).stopper);
+
+			blankLine = (line.find_first_not_of(',') == line.npos);
+			hitStopper = (line == allDetails->at(newLevel - 1).stopper) || blankLine;
+
 			//this stopper must be a section stopper, must come
 			//from one level lower on alldetails vector
 
-			if (hitStopper && !failed)
+			if (hitStopper && !failed && !blankLine)
 			{
+				//we must be careful bc if program stopped at a blank line, then
+				//there is no footer
+
 				//Read inner section footer into the full line
 				for (size_t i = 0; i != allDetails->at(newLevel - 1).footLength; i++) {
 					fullLine = fullLine + line + '\n';
@@ -269,7 +296,7 @@ void Section::readSubsections(std::istream& is)
 		
 		//cout << "Testing section stopper output with line: " << line << endl;
 		readNext = !(line == details->stopper ||
-			containsKeyword(line));
+			containsKeyword(line) || blankLine);
 		//We read NEXT line, to test for
 		//outer section stopper
 	}
@@ -329,8 +356,8 @@ void Section::addHoldNumber(const std::string& fileName, SectionVals& sv)
 		Adds hold (internal) acount number corresponding to account name by looking up
 		unique "Client Name" value in configs/hold_numL.csv file
 	*/
+	sv.holdNum = 0;
 
-	cout << "our filename is : " << fileName << endl;
 	cout << "our clientName is : " << clientName << endl;
 
 	std::ifstream inFile(fileName);
@@ -339,8 +366,9 @@ void Section::addHoldNumber(const std::string& fileName, SectionVals& sv)
 
 	std::string discard;
 	std::getline(inFile, discard, ',');
-	std::getline(inFile, sv.holdNum, ',');
-	//should put the hold num right in there
+	inFile >> sv.holdNum;
+	//should put the hold num right in there by reading next
+	//integer part
 
 	cout << "our holdNum is : " << sv.holdNum << endl;
 
@@ -355,8 +383,33 @@ void Section::addDeleteValue(const std::string& fileName, SectionVals& sv)
 		unique "holdNumber" value in configs/deleteL.csv file
 	*/
 
+	int lkUp = 0;
+	char val = '0';
+	char c;
 
+	ifstream inFile(fileName);
 
+	try
+	{
+		do {
+			inFile >> lkUp >> c >> val;
+		} while ((lkUp != sv.holdNum) && inFile);
 
+		if (inFile)
+			sv.deleteNum = val;
+		else
+			sv.deleteNum = '0';
+	}
+	catch (std::ifstream::failure& e)
+	{
+		std::cout << "Failure reading " << fileName << ", please make sure " <<
+			"file is accessible " << endl << e.what() << endl;
+			sv.deleteNum = '0';
+	}
+
+	inFile.close();
+	//cout << "Delete num is: " << sv.deleteNum << endl;
 }
+
+
 /*  Destructor  */

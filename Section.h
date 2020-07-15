@@ -69,7 +69,7 @@ private:
 
 
 	/*  Private Functions  */
-	void readRows(std::istream& is);
+	const bool readRows(std::istream& is);
 	void readSubsections(std::istream& is);
 	void readSummaryvals();
 
@@ -131,25 +131,29 @@ private:
 		}
 
 		//cout << "Made it to Section Istream: " << endl;
+		bool check = sec.details->hasFooter;
 
 		if (sec.level == 1) {
-			sec.readRows(is);
+			check = sec.readRows(is);
 		}
 		else {
 			sec.readSubsections(is);
+			cout << "Emerging from read subsections, check is: " << check << endl;
 		}
+		
 
-		if (sec.details->hasFooter) {
+		if (check && sec.details->hasFooter) {
 			//if section has a footer, read it in.
+			
 
-			//cout << "First line of footer is: " << line << endl;
-			sec.footer.push_back(line);
+			//cout << "Level is: " << sec.level << endl;
 
 			for (size_t i = 0; i != sec.details->footLength - 1; i++) {
 				std::getline(is, line);
 				//cout << "line of footer is: " << line << endl;
 				sec.footer.push_back(line);
 			}
+			cout << endl;
 		}
 
 		sec.readSummaryvals();
