@@ -25,7 +25,6 @@ struct Lookups {
 	std::string ticker;
 	std::string val_SP;
 	std::string deleteFile;
-	const std::string folder = "configs/";
 
 	void readFileNames(std::ifstream& inFile)
 	{
@@ -43,25 +42,22 @@ struct Lookups {
 
 		//read hold_num file
 		std::getline(inFile, discard, ':');
-		inFile >> holdNum;		//stops at new line;
-		holdNum = folder + holdNum;
+		inFile >> holdNum;		
+		//stops at new line;
 
 		//read ticker file
 		std::getline(inFile, discard, ':');
 		inFile >> ticker;		
-		ticker = folder + ticker;
 
 		//read val_SP file
 		std::getline(inFile, discard, ':');
 		inFile >> val_SP;
-		val_SP = folder + val_SP;
 
 		//read delete file
 		std::getline(inFile, discard, ':');
 		inFile >> deleteFile;
-		deleteFile = folder + deleteFile;
-		
-		cout << "Ticker File is: " << ticker << endl;
+
+		//cout << "Ticker File is: " << ticker << endl;
 		//cout << "holdNum File is: " << holdNum << endl;
 		//cout << "val_sp File is: " << val_SP << endl;
 		//cout << "Delete File is: " << deleteFile << endl;
@@ -266,6 +262,8 @@ public:
 
 	std::string searchTicker(const std::string& fileName);
 
+	std::string searchSP(const std::string& fileName,
+		std::string targetDate = "1/2/1985");
 
 	/*  Destructor  */
 	~DataRow();

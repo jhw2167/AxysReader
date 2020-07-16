@@ -81,11 +81,18 @@ class Date
 
 private:
 
+	enum months { JAN = 0, FEB, MAR, APR, MAY, JUN,
+		JUL, AUG, SEP, OCT, NOV, DEC};
+
+	const static int mDays[12];
+
 	int dd, mm, yyyy;							// Integer member variables defining day, month and year
 
 public:
 
 	Date(int year = 1821, int month = 7, int day = 13);		//yyyy, mm, dd format
+
+	Date(std::string newDate);
 
 	Date(const Date &dateToCopy);			//date class copy constructor 
 
@@ -93,11 +100,16 @@ public:
 
 	void setDate(const Date &otherDate);
 
-	int getDay() const;				//returns integer day of date object
+	int getDay() const;				
+	//returns integer day of date object
 
-	int getMonth() const;			//returns integer month of date object
+	int getMonth() const;			
+	//returns integer month of date object
 
-	int getYear() const;			//returns integer year of date object
+	int getYear() const;			
+	//returns integer year of date object
+
+	std::string getStringDate() const;
 
 	bool operator==(const Date &rhsObj) const;
 
@@ -112,6 +124,8 @@ public:
 	bool operator>(const Date &rhsObj) const;
 
 	const Date& operator=(const Date &rhsObj);
+
+	Date operator--(int dec);
 
 };
 

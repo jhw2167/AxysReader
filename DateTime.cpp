@@ -17,7 +17,8 @@ int MAX_HOUR = 24;
 int MIN_MINUTE = 0;
 int MAX_MINUTE = 59;
 
-
+const int Date::mDays[12] = { 31, 29, 31, 30, 31, 30,
+31, 31, 30, 31, 30, 31 };
 
 /****************************************************************************
 ****************************************************************************
@@ -148,6 +149,31 @@ Date::Date(int year, int month, int day) {
 //END DATE CONSTRUCTOR 
 
 
+//BEGIN DATE STRING CONSTRUCTOR
+Date::Date(std::string newDate)
+{
+	std::stringstream ssDate(newDate);
+
+	cout << "Sample date is: " << newDate << endl;;
+
+
+	int yr, mm, dy;
+	char c;
+
+	ssDate >> mm;
+	ssDate >> c;
+
+	ssDate >> dy;
+	ssDate >> c;
+
+	ssDate >> yr;
+	
+	setDate(yr, mm, dy);
+
+	cout << "Sample date is: " << *this << endl;;
+
+}
+
 //BEGIN DATE CLASS COPY CONSTUCTOR
 Date::Date(const Date &dateToCopy)
 {
@@ -228,16 +254,14 @@ void Date::setDate(int year, int month, int day)	//yyyy, mm, dd format
 		if (invalidDate)
 		{
 			cout << "Attempt to assign invalid date, setting date to default values" << endl;
-
 			throw bad_date_component(dateErr);
-
 		}
 	}
 	catch (bad_date_component &bdc1)
 	{
 		cout << bdc1.what();
 
-		//Exception is function ending, retrown to be handled in MineLog::MineLog
+		//Exception is function ending
 		throw;
 	}
 
@@ -282,6 +306,20 @@ int Date::getYear() const
 	return this->yyyy;
 }
 //END GET YEAR METHOD
+
+
+std::string Date::getStringDate() const
+{
+	char c = '/';
+	std::string dateStr;
+
+	dateStr = std::to_string(mm) + c ;
+	dateStr = std::to_string(dd) + c;
+	dateStr = std::to_string(yyyy);
+
+	return dateStr;
+}
+
 
 
 
@@ -382,6 +420,26 @@ bool Date::operator>(const Date &rhsObj) const {
 //BEGIN OVERLOADED ASSIGNMENT OPERATOR
 const Date& Date::operator=(const Date &rhsObj){
 	setDate(rhsObj.yyyy, rhsObj.mm, rhsObj.dd);
+	return *this;
+}
+
+Date Date::operator--(int dec)
+{
+	cout << "starting date " << *this << endl;
+
+	if (dd != 1)
+		dd--;
+	else if (mm != 1) {
+		dd = mDays[--mm];
+	} 
+	else {
+		mm = 12;
+		dd = mDays[DEC];
+		yyyy--;
+	}
+
+	cout << "finishing date " << *this << endl;
+
 	return *this;
 }
 

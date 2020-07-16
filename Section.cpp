@@ -159,7 +159,7 @@ void Section::aggregateSecs(const Lookups& lks, SectionVals& sv)
 		}
 
 	}
-	else {
+	else if (secName == "Equities"){
 		aggregateRows(lks, sv);
 	}
 	
@@ -360,7 +360,6 @@ void Section::readSummaryvals()
 	}
 	
 }
-
 
 
 void Section::addHoldNumber(const std::string& fileName, SectionVals& sv)

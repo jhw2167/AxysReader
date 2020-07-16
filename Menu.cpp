@@ -8,8 +8,7 @@
 /*  Constructors  */
 Menu::Menu() {
 	exMenu = false;
-	configFile = "configs/Sections.txt";
-	writeFile = "outputs/HOLDNGS.CSV";
+	setFiles();
 	levels = 0;
 
 	mainMenu(0);
@@ -89,18 +88,120 @@ const bool Menu::exit() const {
 
 
 /*  Private functions  */
+void Menu::setFiles()
+{
+	/*
+		One core file "configs/lookups.txt" holds all the core file names
+		for the rest of the program, this method will setUp all those files
+	*/
+	std::string coreFile = "configs/Lookups.txt";
+	std::cout << "Scanning for file:  " << coreFile << "  to setUp program" << endl;
+
+	std::ifstream inFile;
+
+	do
+	{
+		bool runMenu = false;
+		try {
+			inFile.open(coreFile);
+		}
+		catch (const file_open_error& foe1)
+		{
+			setFileHelp(coreFile);
+			runMenu = true;
+		}
+
+		if (!runMenu && !inFile)
+			setFileHelp(coreFile);
+
+	} while (!inFile && !exMenu);
+	
+	
+	if (!inFile) {
+		return;
+	}
+	
+	std::string line;
+	std::string discard;
+
+	std::string breaker = "LOOKUP FILES (from directory with AxysReader.exe):";
+	readThrough(inFile, breaker);
+	lookupFiles.readFileNames(inFile);
+
+
+	std::getline(inFile, discard, ':');
+	inFile >> SectionsFile;
+	//get Section header_footer config file
+
+	cout << endl << endl << "sections" << SectionsFile << endl;
+
+	std::getline(inFile, discard, ':');
+	inFile >> readFile;
+	//get read file
+
+	std::getline(inFile, discard, ':');
+	inFile >> writeFile;
+	//get write file
+
+	std::getline(inFile, discard, ':');
+	inFile >> flagsFile;
+	//get error flag config file
+
+}
+
+void Menu::setFileHelp(std::string& coreFile)
+{
+	/*
+		Presents menu options for setFiles() method to assist with file errors
+		in opening the main loading file
+	*/
+
+	//Start with our menu;
+
+	std::cout << "Problem finding or opening file: " << coreFile << endl;
+	std::cout << "Please create the file, or enter a new filename";
+	std::cout << "Please note this is NOT the Axys report File" << endl << endl;
+	std::cout << "Please enter: "
+		<< "0 - Try again with same file" << std::string(5, ' ')
+		<< "1 - Change File Name" << std::string(5, ' ')
+		<< "2 - Exit program" << endl;
+
+	//get option and run case:
+	char c;
+	std::cin >> c;
+
+	std::cout << endl;
+	switch (c)
+	{
+	case 0:
+		break;
+
+	case 1:
+		std::cout << "Please enter new file name: ";
+		std::cin >> coreFile;
+		std::cout << endl << endl;
+		break;
+
+	default:
+		exMenu = true;
+		break;
+	}
+
+	return;
+}
+
 void Menu::initConfigs()
 {
 	try
 	{
 		//std::cout << "Opening config file: " << configFile << endl;
-		std::ifstream inStream(configFile);
+		std::ifstream inStream(SectionsFile);
 		//configFile is initialized to filename "Sections.txt" in
 		//the constructor of this class, if that file is lost or
 		//the file name is changed, the program will malfuntion
 
 		if (inStream.fail()) {
-			std::string err = "unable to find config file: " + configFile +
+			std::string err = "unable to find config file: " + SectionsFile +
 				" in program directory" + '\n';
 			throw file_open_error(err);
 		}
@@ -110,9 +211,7 @@ void Menu::initConfigs()
 		//of distinct header/footer pairs to deal with
 
 		cout << "Number of levels: " << levels << endl;
-		std::string breaker = "LOOKUP FILES:";
-
-		readThrough(inStream, breaker);
+		
 		lookupFiles.readFileNames(inStream);
 
 		for (size_t i = 0; i != levels; i++) {
@@ -222,7 +321,11 @@ void Menu::aggregate()
 		into the "writes" vector
 	*/
 
-	//Establish Lookups
+	//Get current S&P Value from user
+	double sp500 = -1;
+
+	std::cout << "Please enter current S&P 500 value: ";
+	std::cin >> sp500;
 	
 	
 	//Establish Date
@@ -236,6 +339,7 @@ void Menu::aggregate()
 	{
 		SectionVals sv;
 		sv.nowDate = time.str();
+		sv.sp_current = sp500;
 
 		section.aggregateSecs(lookupFiles, sv);
 	}

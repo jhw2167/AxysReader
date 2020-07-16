@@ -43,11 +43,15 @@ private:
 	//The entire .csv doc will wrapped in one sections vector
 
 	std::vector<hf_config> configs;
-	std::string configFile;
+	std::string SectionsFile;
+	std::string flagsFile;
 	int levels;
 
 	/*  Other Functions -- Private  */
+	void setFiles();
+	void setFileHelp(std::string& coreFile);
 	void initConfigs();
+
 	void readFiles();
 	void aggregate();
 	void writeFiles();

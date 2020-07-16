@@ -82,7 +82,7 @@ void DataRow::aggregate(const Lookups& lks, SectionVals& sv, std::string secName
 	writes.push_back(sv.nowDate);
 
 	//Add SP_COMP (Read Lookup: Date in SP_Val_lookup, Formula)
-	writes.push_back("SP_COMP");
+	writes.push_back(searchSP(lks.val_SP));
 
 	//Add SP_CURRENT (Entered value)
 	writes.push_back(std::to_string(sv.sp_current));
@@ -180,6 +180,104 @@ std::string DataRow::searchTicker(const std::string& fileName)
 
 	return ticker;
 }
+
+std::string DataRow::searchSP(const std::string& fileName, std::string targetDate)
+{
+	//If we cant find the date, we ensure its greater than
+			// 1/2/1985
+	const static Date minDate = Date(1985, 1, 2);
+
+	std::string sp_comp = "0";
+	std::string search = "Date val stored here";
+
+	std::string discard;
+	char sep;
+	/*
+		sp_comp hold each line's sp_500 value, search will hold
+		each file line's date value, which will be compared to
+		targetDate (generated from file read)
+		below
+		discard is just for excess on each line
+	*/
+
+	try
+	{
+		std::ifstream inFile(fileName);
+		//declare and open our file
+
+		if (targetDate == minDate.getStringDate()) {
+			std::string targetDate = reads.at(DATE);
+		}
+		//This is the value we are vLookingUp to find
+		//the right ticker
+
+		std::getline(inFile, discard);
+		std::getline(inFile, discard);
+		//First two lines are extraneous
+
+		while ((search != targetDate) && inFile)
+		{
+			std::getline(inFile, search, ',');
+			std::getline(inFile, sp_comp, ',');
+			std::getline(inFile, discard);
+		}
+
+		if (!inFile) {
+
+			Date notFound(targetDate);
+
+			if (notFound > minDate) {
+				notFound--;
+				inFile.close();
+				searchSP(fileName, notFound.getStringDate());
+			}
+			else {
+				sp_comp = "0";
+				std::cout << "sp_comp vale NOT FOUND for date: " << targetDate << endl;
+			}
+			
+		}
+		else
+			inFile.close();
+
+	}
+	catch (const std::out_of_range& or1)
+	{
+		std::cout << "Out of range exception caught in " <<
+			"datarow::aggregate::searchTicker " << endl;
+		std::cout << "Setting ticker to !FOUND" << endl;
+
+		sp_comp = "0";
+	}
+	catch (const file_open_error& op1)
+	{
+		static bool showError = true;
+
+		if (showError)
+		{
+			std::cout << "File Open error caught in " <<
+				"datarow::aggregate::searchTicker " << endl;
+			std::cout << "Check file " << fileName <<
+				" for corruption or if it is missing" << endl;
+			std::cout << "Setting all tickers to !FOUND" << endl;
+
+			showError = false;
+		}
+
+		sp_comp = "0";
+	}
+	catch (const bad_date_component& bd1)
+	{
+		std::cout << "Bad date component exception found in sp_search " <<
+			"for date: " << targetDate << "sp value will be seet to default 0";
+		sp_comp = "0";
+	}
+
+
+
+	return sp_comp;
+}
+
 
 
 //End accessors
