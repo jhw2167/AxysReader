@@ -259,13 +259,20 @@ void Section::readSubsections(std::istream& is)
 	bool failed = !std::getline(is, line);
 	numSubs = 0;
 
+	//Check for initial blankline, which indicated blank section
+	bool blankLine = (line.find_first_not_of(',') == line.npos);
+	if (blankLine) {
+		throw no_such_object("Blank Section found");
+		return;
+	}
 
 	while (readNext && !failed)
 	{
 
 		fullLine = "";
 		bool hitStopper = false;
-		bool blankLine = false;
+		blankLine = false;
+
 		while (!hitStopper && !failed)
 		{
 			fullLine = fullLine + line + '\n';

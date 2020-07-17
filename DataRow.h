@@ -184,6 +184,7 @@ private:
 
 				if (nextChar == '"') {
 					ssLine >> sep;
+
 					std::getline(ssLine, val, '"');
 					val = '"' + val + '"';
 					ssLine >> sep;
@@ -192,6 +193,15 @@ private:
 						' " ' as our delimiter, then pick up the comma
 						following it with a ssLine >> sep at the end
 					*/
+
+					/*
+						WE NEED TO CHECK IF NEXT CHAR IS ALSO " then continue
+						PROCESSING
+					*/
+
+
+					cout << "Val is: "<< val << endl;
+
 				}
 				else {
 					std::getline(ssLine, val, ',');

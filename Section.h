@@ -133,12 +133,29 @@ private:
 
 		//cout << "Made it to Section Istream: " << endl;
 		bool check = sec.details->hasFooter;
+		bool blankSec = false;
 
-		if (sec.level == 1) {
-			check = sec.readRows(is);
+		try
+		{
+			if (sec.level == 1) {
+				check = sec.readRows(is);
+			}
+			else {
+				sec.readSubsections(is);
+			}
+
 		}
-		else {
-			sec.readSubsections(is);
+		catch (const no_such_object& ns1){
+			cout << "Blank section found at level " << sec.level 
+				<< "... Proceeding with reads";
+			blankSec = true;
+		}
+		catch (const std::exception& e1){
+			cout << "Unkown exception caught in section level " <<
+				sec.level << " with error code: " << endl 
+				<< e1.what() << endl;
+
+			blankSec = true;
 		}
 		
 
@@ -153,7 +170,10 @@ private:
 			}
 		}
 
-		sec.readSummaryvals();
+		if (!blankSec) {
+			sec.readSummaryvals();
+		}
+		
 
 		return is;
 	}

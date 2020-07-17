@@ -133,7 +133,7 @@ void Menu::setFiles()
 	inFile >> SectionsFile;
 	//get Section header_footer config file
 
-	cout << endl << endl << "sections" << SectionsFile << endl;
+	cout << "sections File: " << SectionsFile << endl << endl;
 
 	std::getline(inFile, discard, ':');
 	inFile >> readFile;
@@ -146,6 +146,9 @@ void Menu::setFiles()
 	std::getline(inFile, discard, ':');
 	inFile >> flagsFile;
 	//get error flag config file
+
+	//Close File
+	inFile.close();
 
 }
 
@@ -211,8 +214,6 @@ void Menu::initConfigs()
 		//of distinct header/footer pairs to deal with
 
 		cout << "Number of levels: " << levels << endl;
-		
-		lookupFiles.readFileNames(inStream);
 
 		for (size_t i = 0; i != levels; i++) {
 			hf_config newConfig(inStream, i+1);
@@ -249,7 +250,7 @@ void Menu::readFiles()
 		std::cin >> readFile;
 		//reads infile name entered by the user
 
-		readFile = "db4c.csv";
+		readFile = "db1c.csv";
 
 		if (readFile == "")
 		{
@@ -275,12 +276,6 @@ void Menu::readFiles()
 			//generally its bad practice to use eof, 
 			//but it suits our needs here
 
-			/*
-						NON-COPY CONSTRUCTOR
-			Section* newSec = new Section(&configs, levels);
-			inStream >> *newSec;
-			
-			*/
 			Section s = Section(&configs, levels);
 			inStream >> s;
 
@@ -334,6 +329,8 @@ void Menu::aggregate()
 	std::stringstream time;
 
 	time << std::put_time(localTime, "%m/%d/%Y");
+
+	cout << "Lookup files val_sp: " << lookupFiles.val_SP << endl;
 
 	for (auto& section : wrapper)
 	{

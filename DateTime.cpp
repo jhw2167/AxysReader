@@ -154,9 +154,6 @@ Date::Date(std::string newDate)
 {
 	std::stringstream ssDate(newDate);
 
-	cout << "Sample date is: " << newDate << endl;;
-
-
 	int yr, mm, dy;
 	char c;
 
@@ -308,20 +305,19 @@ int Date::getYear() const
 //END GET YEAR METHOD
 
 
+//BEGIN GET STRING DATE
 std::string Date::getStringDate() const
 {
 	char c = '/';
 	std::string dateStr;
 
 	dateStr = std::to_string(mm) + c ;
-	dateStr = std::to_string(dd) + c;
-	dateStr = std::to_string(yyyy);
+	dateStr += std::to_string(dd) + c;
+	dateStr += std::to_string(yyyy);
 
 	return dateStr;
 }
-
-
-
+//END GET STRING DATE
 
 
 //BEGIN OVERLOADED EQUALITY OPERATOR

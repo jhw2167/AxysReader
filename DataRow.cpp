@@ -183,12 +183,19 @@ std::string DataRow::searchTicker(const std::string& fileName)
 
 std::string DataRow::searchSP(const std::string& fileName, std::string targetDate)
 {
+	/*
+		We search for the dated SP_500 value in sp_val file by date
+		if we do not find the desired date we subtract a day and search again
+		until found. if the date is less than the minDate, we assign
+		0 and continue to next entry.		
+	*/
+
 	//If we cant find the date, we ensure its greater than
 			// 1/2/1985
 	const static Date minDate = Date(1985, 1, 2);
 
 	std::string sp_comp = "0";
-	std::string search = "Date val stored here";
+	std::string search = "Temp Date val stored here";
 
 	std::string discard;
 	char sep;
@@ -204,6 +211,11 @@ std::string DataRow::searchSP(const std::string& fileName, std::string targetDat
 	{
 		std::ifstream inFile(fileName);
 		//declare and open our file
+
+		if (!inFile) {
+			//cout << "not in file: " << fileName << endl;;
+			throw file_open_error("");
+		}
 
 		if (targetDate == minDate.getStringDate()) {
 			std::string targetDate = reads.at(DATE);
@@ -239,7 +251,6 @@ std::string DataRow::searchSP(const std::string& fileName, std::string targetDat
 		}
 		else
 			inFile.close();
-
 	}
 	catch (const std::out_of_range& or1)
 	{
@@ -272,8 +283,6 @@ std::string DataRow::searchSP(const std::string& fileName, std::string targetDat
 			"for date: " << targetDate << "sp value will be seet to default 0";
 		sp_comp = "0";
 	}
-
-
 
 	return sp_comp;
 }
