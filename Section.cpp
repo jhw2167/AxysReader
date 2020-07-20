@@ -4,6 +4,8 @@
 	Implementation file for Class Section
 */
 
+/*  Initialize static variables */
+int Section::equityReads = 0;
 
 /*  Constructor  */
 Section::Section() {
@@ -159,7 +161,7 @@ void Section::aggregateSecs(const Lookups& lks, SectionVals& sv)
 		}
 
 	}
-	else if (secName == "Equities"){
+	else if (secName == "Equities" || secName == "Alternative Assets"){
 		aggregateRows(lks, sv);
 	}
 	
@@ -170,6 +172,18 @@ void Section::aggregateRows(const Lookups& lks, SectionVals& sv)
 	//Call aggregateData for DataRows	
 	for (auto& row : rows) {
 		row.aggregate(lks, sv, secName);
+	}
+
+	
+
+	DataRow dr = rows.at(0);
+	double percDone = 100 * (dr.getTotalAgg() /
+		static_cast<double>(dr.getTotalReads()));
+	static double threshold = 0;
+
+	if (percDone > threshold) {
+		threshold += 19;
+		cout << endl << percDone << "%" << " processing outputs" << endl;
 	}
 }
 
@@ -197,13 +211,14 @@ std::ifstream& Section::readThrough(std::ifstream& is, std::string& brk, char c)
 
 const bool Section::readRows(std::istream& is)
 {
+	DataRow dr;
 	std::string line;
 
 	bool failed = false;
 	bool readNext = true;
 	//initialize variables simply
 
-	numRows = -1;
+	numRows = 0;
 	//offsets for one extra numRows++ command in 
 	//the while loop
 	
@@ -222,10 +237,11 @@ const bool Section::readRows(std::istream& is)
 		//there are no more rows to read in this section
 
 		bool blank = (line.find_first_not_of(',') == line.npos);
-		
+
 		if (blank && (line != details->stopper)) {
 			return false;
 		}
+
 		//Also, if next line is blank and the footer stopper
 		//is NOT blank, there is no footer section
 		//this occurs in Axys reader section when there is 1 row/section
@@ -238,8 +254,12 @@ const bool Section::readRows(std::istream& is)
 			ssLine >> row;
 			addRow(row);
 			numRows++;
+
+			if (secName == "Equities" || secName == "Alternative Assets")
+				equityReads++;
 		}
 	}
+
 	return details->hasFooter;
 }
 
@@ -266,6 +286,8 @@ void Section::readSubsections(std::istream& is)
 		return;
 	}
 
+	DataRow dr;
+
 	while (readNext && !failed)
 	{
 
@@ -281,7 +303,7 @@ void Section::readSubsections(std::istream& is)
 			blankLine = (line.find_first_not_of(',') == line.npos);
 			hitStopper = (line == allDetails->at(newLevel - 1).stopper) || blankLine;
 
-			//this stopper must be a section stopper, must come
+			//this stopper must be a SUBsection stopper, must come
 			//from one level lower on alldetails vector
 
 			if (hitStopper && !failed && !blankLine)
@@ -289,7 +311,7 @@ void Section::readSubsections(std::istream& is)
 				//we must be careful bc if program stopped at a blank line, then
 				//there is no footer
 
-				//Read inner section footer into the full line
+				//Read subsection footer into the full line
 				for (size_t i = 0; i != allDetails->at(newLevel - 1).footLength; i++) {
 					fullLine = fullLine + line + '\n';
 					failed = !std::getline(is, line);
@@ -308,21 +330,27 @@ void Section::readSubsections(std::istream& is)
 		}
 
 		std::stringstream ssLine(fullLine);
-
 		ssLine >> ns;
+
 		subs.push_back(ns);
 		numSubs++;
 		//Read full section into ns and push it onto vector
 		
-		//cout << "Testing section stopper output with line: " << line << endl;
+		if (blankLine) {
+			std::getline(is, line);
+			//get an additional line to replace "blankline"
+			//currently stored in line variable
+		}
+
 		readNext = !(line == details->stopper ||
-			containsKeyword(line) || blankLine);
+			containsKeyword(line)); // || blankLine);
 		//We read NEXT line, to test for
 		//outer section stopper
 	}
 
-
-	
+	//cout << "\n\n\n Continue Reading? ";
+	//getchar();
+	cout << endl;
 }
 
 void Section::readSummaryvals()
@@ -377,7 +405,7 @@ void Section::addHoldNumber(const std::string& fileName, SectionVals& sv)
 	*/
 	sv.holdNum = 0;
 
-	cout << "our clientName is : " << clientName << endl;
+	//cout << "our clientName is : " << clientName << endl;
 
 	std::ifstream inFile(fileName);
 
@@ -389,7 +417,7 @@ void Section::addHoldNumber(const std::string& fileName, SectionVals& sv)
 	//should put the hold num right in there by reading next
 	//integer part
 
-	cout << "our holdNum is : " << sv.holdNum << endl;
+	//cout << "our holdNum is : " << sv.holdNum << endl;
 
 	inFile.close();
 }

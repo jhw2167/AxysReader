@@ -38,7 +38,6 @@ struct Lookups {
 			LookUp Ticker: tickerL.csv
 		*/
 		std::string discard;
-		char c; //holds space character
 
 		//read hold_num file
 		std::getline(inFile, discard, ':');
@@ -109,6 +108,10 @@ private:
 	static int readCols;
 	static int writeCols;
 
+	static int totalRead;
+	static int totalWritten;
+	static int totalAgg;
+
 	std::vector<std::string> reads;
 	std::vector<std::string> writes;
 
@@ -139,6 +142,8 @@ private:
 
 			//cout << "value is: " << col;
 		}
+
+		dRow.totalWritten++;
 		return os;
 	}
 	//END INSERTION STREAM OPERATOR
@@ -183,9 +188,23 @@ private:
 				*/
 
 				if (nextChar == '"') {
-					ssLine >> sep;
 
+					ssLine >> sep;
 					std::getline(ssLine, val, '"');
+					nextChar = ssLine.peek();
+
+					if (nextChar != ',')
+					{
+						val += '"';	//Need to add this back that we lost in getline
+						while ( !(nextChar == '"' && ssLine.peek() == ','))
+						{
+							nextChar = ssLine.get();
+							val += nextChar;
+						}
+						val.pop_back();
+						//get rid of extra quotes
+					}
+
 					val = '"' + val + '"';
 					ssLine >> sep;
 					/*
@@ -200,7 +219,7 @@ private:
 					*/
 
 
-					cout << "Val is: "<< val << endl;
+					//cout << "Val is: "<< val << endl;
 
 				}
 				else {
@@ -239,6 +258,7 @@ private:
 			throw;
 		}
 
+		dRow.totalRead++;
 		return is;
 	}
 	//END EXTRACTION STREAM OPERATOR
@@ -251,12 +271,18 @@ private:
 
 public:
 
-	/*  Constructor  */
+	/*  Constructor */
 	DataRow();
 
 
 	/*  Accessors  */
 	int getWriteCols();
+
+	int getTotalReads();
+
+	int getTotalWrites();
+
+	int getTotalAgg();
 
 	std::string getClientName();
 

@@ -43,6 +43,9 @@ private:
 	//Subsections (equities, Cash and Equivalents) - level 1
 	//Client Portfolio headers - level 2
 
+	static int equityReads;
+	//number of Equity and Alternative Asset Rows Read
+
 	std::string clientName;
 	std::string secName;
 	//Mostly used for subsections that have select few
@@ -83,14 +86,19 @@ private:
 		/*
 			Output dataRows to stream, comma delimited as per .CSV format
 			simply calls the dataRow "insertion" operator.
+		
 		*/
+
 		//cout << "calling SECTION OSTREAM for level " << sec.level <<
 			//", size is: " << sec.rows.size() << endl;
 
-		if (sec.level == 1 && sec.secName == "Equities") {
-
-			for (const auto& row : sec.rows) {
-				os << row << endl;
+		if (sec.level == 1) {
+			
+			if (sec.secName == "Equities" || sec.secName == "Alternative Assets")
+			{
+				for (const auto& row : sec.rows) {
+					os << row << endl;
+				}
 			}
 
 		}
@@ -101,8 +109,6 @@ private:
 			}
 		}
 
-		
-
 		return os;
 	}
 	//End INSERTION operator
@@ -111,6 +117,7 @@ private:
 	//Start EXTRACTION operator
 	inline friend std::istream& operator>>(std::istream& is, Section& sec)
 	{
+		DataRow dr;
 		std::string line;
 		//declare generic string for getting lines		
 
@@ -122,10 +129,11 @@ private:
 			int index = std::min(line.find_first_of(','), line.size());
 			sec.secName = line.substr(0, index);
 
-			//cout << "First line of header is: " << sec.secName << endl;
+			if (dr.getTotalReads() > 7000) {
+				cout << "First line of header is: " << sec.secName << endl;
+			}
 
 			for (size_t i = 0; i != sec.details->headLength - 1; i++) {
-
 				std::getline(is, line);
 				sec.header.push_back(line);
 			}
@@ -147,7 +155,8 @@ private:
 		}
 		catch (const no_such_object& ns1){
 			cout << "Blank section found at level " << sec.level 
-				<< "... Proceeding with reads";
+				<< "... Proceeding with reads" << endl << endl;
+			ns1;
 			blankSec = true;
 		}
 		catch (const std::exception& e1){
@@ -157,11 +166,11 @@ private:
 
 			blankSec = true;
 		}
-		
 
 		if (check && sec.details->hasFooter) {
 			//if section has a footer, read it in.
 			//cout << "Level is: " << sec.level << endl;
+
 
 			for (size_t i = 0; i != sec.details->footLength - 1; i++) {
 				std::getline(is, line);
@@ -173,8 +182,19 @@ private:
 		if (!blankSec) {
 			sec.readSummaryvals();
 		}
-		
 
+
+
+		if (sec.secName == "Equities" || sec.secName == "Alternative Assets")
+
+		{
+			cout << "Client: " << sec.rows.at(0).getClientName() << endl;
+			//cout << "Section: " << secName << endl;
+			//cout << "Vector Length: " << rows.size() << "  numRows: " << numRows <<
+				//endl << "  Total Reads so far: " << rows.at(0).getTotalReads();
+			cout << endl << "               | " << "Total equity reads: " << equityReads << " |";
+			cout << endl << endl;
+		}
 		return is;
 	}
 

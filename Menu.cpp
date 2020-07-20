@@ -250,7 +250,7 @@ void Menu::readFiles()
 		std::cin >> readFile;
 		//reads infile name entered by the user
 
-		readFile = "db1c.csv";
+		readFile = "db1c_6.csv";
 
 		if (readFile == "")
 		{
@@ -305,8 +305,8 @@ void Menu::readFiles()
 		cout << "Unkown exception caught in Menu::ReadFile";
 	}
 	
-
-
+	DataRow row;
+	cout << "Total reads: " << row.getTotalReads() << endl;
 }
 
 void Menu::aggregate()
@@ -352,6 +352,10 @@ void Menu::writeFiles()
 		output << i;
 	}
 	exMenu = true;
+
+	DataRow row;
+	cout << "Total writes: " << row.getTotalWrites() << endl;
+
 }
 
 std::ifstream& Menu::readThrough(std::ifstream& is, std::string& brk)

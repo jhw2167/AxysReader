@@ -9,6 +9,10 @@
 
 int DataRow::readCols = 0;
 int DataRow::writeCols = 0;
+
+int DataRow::totalRead = 0;
+int DataRow::totalWritten = 0;
+int DataRow::totalAgg = 0;
 //End inits
 
 
@@ -24,6 +28,18 @@ DataRow::DataRow()
 
 int DataRow::getWriteCols () {
 	return writeCols;
+}
+
+int DataRow::getTotalReads() {
+	return totalRead;
+}
+
+int DataRow::getTotalWrites() {
+	return totalWritten;
+}
+
+int DataRow::getTotalAgg() {
+	return totalAgg;
 }
 
 std::string DataRow::getClientName() {
@@ -51,17 +67,14 @@ void DataRow::aggregate(const Lookups& lks, SectionVals& sv, std::string secName
 	*/
 
 	//Lets see company name too:
-	writes.push_back(reads.at(SECURITY));
+	//writes.push_back(reads.at(SECURITY));
 
 	//Add Ticker (by Lookup in file)
 	writes.push_back(searchTicker(lks.ticker));
 
 	//Add Shares (Read Quantity)
-	if (secName == "Equities")
-		writes.push_back(reads.at(SHARES));
-	else
-		writes.push_back("0");
-	
+
+	writes.push_back(reads.at(SHARES));
 
 	//Add Clients (read Portfolio Name)
 	writes.push_back(reads.at(CLIENT));
@@ -101,6 +114,7 @@ void DataRow::aggregate(const Lookups& lks, SectionVals& sv, std::string secName
 
 
 	//Extra
+	totalAgg++;
 	writeCols = writes.size();
 }
 
