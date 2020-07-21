@@ -250,7 +250,7 @@ void Menu::readFiles()
 		std::cin >> readFile;
 		//reads infile name entered by the user
 
-		readFile = "db1c_6.csv";
+		readFile = "db1c.csv";
 
 		if (readFile == "")
 		{
@@ -296,7 +296,7 @@ void Menu::readFiles()
 	}
 	catch (std::bad_alloc& ba1) {
 		std::cout << "Caught bad alloc exception in Menu::readFiles "
-			<< "Proceeding to write rows our and exit ";
+			<< "Proceeding to write rows out and exit ";
 
 		throw ba1;
 	}

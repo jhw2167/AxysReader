@@ -167,7 +167,7 @@ Date::Date(std::string newDate)
 	
 	setDate(yr, mm, dy);
 
-	cout << "Sample date is: " << *this << endl;;
+	//cout << "Sample date is: " << *this << endl;;
 
 }
 
@@ -183,7 +183,7 @@ Date::Date(const Date &dateToCopy)
 void Date::setDate(int year, int month, int day)	//yyyy, mm, dd format
 {
 	//string and bool for testing and describing invalid date arguments
-	std::string dateErr = "Set date class attempted to set invalid date, setting date to default values ";
+	std::string dateErr = "Set date class attempted to set invalid date, setting date to default values \n";
 	bool invalidDate = false;
 
 	bool oddMonth = (1 == month % 2);
@@ -217,7 +217,8 @@ void Date::setDate(int year, int month, int day)	//yyyy, mm, dd format
 			dateErr += " is an invalid day for month ";
 			dateErr += intToString::toString(month);
 			dateErr += ", day must be between ";
-			dateErr += intToString::toString(min_day) + " and " + intToString::toString(max_day - 2);
+			dateErr += intToString::toString(min_day) + " and " 
+				+ intToString::toString(max_day - 2) + '\n';
 		}
 	}
 
@@ -248,8 +249,7 @@ void Date::setDate(int year, int month, int day)	//yyyy, mm, dd format
 
 	try
 	{
-		if (invalidDate)
-		{
+		if (invalidDate) {
 			cout << "Attempt to assign invalid date, setting date to default values" << endl;
 			throw bad_date_component(dateErr);
 		}
@@ -421,12 +421,14 @@ const Date& Date::operator=(const Date &rhsObj){
 
 Date Date::operator--(int dec)
 {
-	cout << "starting date " << *this << endl;
+	//cout << "Date we are decrementing is: " << *this << endl;
 
-	if (dd != 1)
+	if (dd != 1) {
 		dd--;
+	}
 	else if (mm != 1) {
-		dd = mDays[--mm];
+		--mm;
+		dd = mDays[mm - 1];
 	} 
 	else {
 		mm = 12;
@@ -434,7 +436,7 @@ Date Date::operator--(int dec)
 		yyyy--;
 	}
 
-	cout << "finishing date " << *this << endl;
+	cout << endl;
 
 	return *this;
 }

@@ -231,6 +231,9 @@ public:
 
 	const std::vector<string>& getSummaryVals();
 
+	const long double getSectionMrktVal();
+
+	const long double getSectionTotCost();
 
 	/* Other Functions  */
 	void addRow(const DataRow& r);

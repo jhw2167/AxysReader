@@ -276,13 +276,17 @@ public:
 
 
 	/*  Accessors  */
-	int getWriteCols();
+	const int getWriteCols();
 
-	int getTotalReads();
+	const int getTotalReads();
 
-	int getTotalWrites();
+	const int getTotalWrites();
 
-	int getTotalAgg();
+	const int getTotalAgg();
+
+	const long double getMktValAsset();
+
+	const long double getTotCostAsset();
 
 	std::string getClientName();
 

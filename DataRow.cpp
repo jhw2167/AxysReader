@@ -26,20 +26,38 @@ DataRow::DataRow()
 
 	/*  Accessors  */
 
-int DataRow::getWriteCols () {
+const int DataRow::getWriteCols () {
 	return writeCols;
 }
 
-int DataRow::getTotalReads() {
+const int DataRow::getTotalReads() {
 	return totalRead;
 }
 
-int DataRow::getTotalWrites() {
+const int DataRow::getTotalWrites() {
 	return totalWritten;
 }
 
-int DataRow::getTotalAgg() {
+const int DataRow::getTotalAgg() {
 	return totalAgg;
+}
+
+const long double DataRow::getMktValAsset() {
+
+	std::stringstream ssVal(reads.at(MRKT_VAL));
+	long double val;
+	ssVal >> val;
+
+	return val;
+}
+
+const long double DataRow::getTotCostAsset()
+{
+	std::stringstream ssVal(reads.at(TOT_COST));
+	long double val;
+	ssVal >> val;
+
+	return val;
 }
 
 std::string DataRow::getClientName() {
@@ -232,7 +250,11 @@ std::string DataRow::searchSP(const std::string& fileName, std::string targetDat
 		}
 
 		if (targetDate == minDate.getStringDate()) {
-			std::string targetDate = reads.at(DATE);
+			targetDate = reads.at(DATE);
+
+			if (Date(targetDate) < minDate) {
+				inFile.close();
+			}
 		}
 		//This is the value we are vLookingUp to find
 		//the right ticker
@@ -259,7 +281,12 @@ std::string DataRow::searchSP(const std::string& fileName, std::string targetDat
 			}
 			else {
 				sp_comp = "0";
-				std::cout << "sp_comp vale NOT FOUND for date: " << targetDate << endl;
+
+				if (false) {
+					std::cout << "sp_comp vale NOT FOUND for date: " << targetDate <<
+						", setting sp_value to 0" << endl;
+				}
+				
 			}
 			
 		}
@@ -269,8 +296,8 @@ std::string DataRow::searchSP(const std::string& fileName, std::string targetDat
 	catch (const std::out_of_range& or1)
 	{
 		std::cout << "Out of range exception caught in " <<
-			"datarow::aggregate::searchTicker " << endl;
-		std::cout << "Setting ticker to !FOUND" << endl;
+			"datarow::aggregate::searchTicker for date "<< targetDate << endl;
+		std::cout << "Setting sp val to 0" << endl;
 
 		sp_comp = "0";
 	}

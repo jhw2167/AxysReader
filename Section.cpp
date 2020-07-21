@@ -78,6 +78,23 @@ const std::vector<string>& Section::getSummaryVals() {
 	return summaryVals;
 }
 
+const long double Section::getSectionMrktVal() {
+
+	std::stringstream ssVal(summaryVals.at(0));
+	long double val;
+	ssVal >> val;
+
+	return val;
+}
+
+const long double Section::getSectionTotCost() {
+
+	std::stringstream ssVal(summaryVals.at(1));
+	long double val;
+	ssVal >> val;
+
+	return val;
+}
 
 
 /*  Other Functions  */
@@ -182,7 +199,8 @@ void Section::aggregateRows(const Lookups& lks, SectionVals& sv)
 	static double threshold = 0;
 
 	if (percDone > threshold) {
-		threshold += 19;
+		double newThresh = (int)(percDone * 100000) % 25;
+		threshold += newThresh;
 		cout << endl << percDone << "%" << " processing outputs" << endl;
 	}
 }
@@ -350,48 +368,69 @@ void Section::readSubsections(std::istream& is)
 
 	//cout << "\n\n\n Continue Reading? ";
 	//getchar();
-	cout << endl;
+	//cout << endl;
 }
 
 void Section::readSummaryvals()
 {
 	/*
-		Read Summary values for each section for Axys reader, appear 1 or 2
-		lines into the footer of each section
+		Read Summary values for each section for Axys reader,we will sum all
+		the values in the "MRKT_VAL" column of the report
 	*/
 
 	/*
-		gets next char until there is a number, adds the number
-		to the summar vals vector for later access
-		as of 7/14/20 Axys value format:
-		 -First Number will be mrket value summary (Cash & Eqvs,
-		 Equities etc. total) or Total_port if you are on level 2
-		 -second number will be "total cost" summary val
+		We obtain the total value of the section (fixed,
+		Equities, etc, by summing all the row values)
 	*/
 
-	//read footer into string, then string stream
-	std::string footerLine = "";
-	for (auto& line : footer) {
-		footerLine += line;
-	}
+	double total = 0;
 
-	std::stringstream ssFooter(footerLine);
-	char c;
+	switch (level)
+	{
+	case 1:
+		//At subsection level, sum all the values from the rows
 
-	while (ssFooter.get(c)) {
-		if (isdigit(c)) {
-			std::string num;
-			std::getline(ssFooter, num, ',');
-			summaryVals.push_back(c + num);
+		total = 0;
+		for (auto& row : rows) {
+			total += row.getMktValAsset();
 		}
-	}
+		summaryVals.push_back(std::to_string(total));
+		//Mrkt Value sum at index 0
 
-	//setClientname
-	if (level > 1) {
-		clientName = subs.at(0).getClientName();
-	}
-	else {
+
+		total = 0;
+		for (auto& row : rows) {
+			total += row.getTotCostAsset();
+		}
+
+		summaryVals.push_back(std::to_string(total));
+		//Tot cost sum at index 1
+
+
+		//set client Name
 		clientName = rows.at(0).getClientName();
+
+		break;
+
+	default:
+		//If we are at a client level, sum all the summary
+		//values from the sections below it
+
+		total = 0;
+		for (auto& sub : subs) {
+			total += sub.getSectionMrktVal();
+		}
+		summaryVals.push_back(std::to_string(total));
+
+		total = 0;
+		for (auto& sub : subs) {
+			total += sub.getSectionTotCost();
+		}
+		summaryVals.push_back(std::to_string(total));
+
+		break;
+		//set client Name
+		clientName = subs.at(0).getClientName();
 	}
 	
 }
