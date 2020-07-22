@@ -66,8 +66,8 @@ void Menu::mainMenu(int opt)
 		}
 	}
 	catch (file_open_error &foe1) {
-		std::cout << "could not open file, " << foe1.what() <<
-			" exception rethrowing and program ending " << endl;
+		std::cout << "could not open file: " << foe1.what() <<
+			" program ending, please ensure file exists and restart program" << endl;
 		throw foe1;
 	}
 	catch (std::out_of_range& or1) {
@@ -223,7 +223,7 @@ void Menu::initConfigs()
 		//and saves it in our configs vector
 		//For AxysReader there are TWO (2) levels
 
-		cout << "stream failed: " << inStream.fail() << endl;
+		//cout << "stream failed: " << inStream.fail() << endl;
 	}
 	catch (file_open_error& foe1) {
 		//Error handling
@@ -269,7 +269,7 @@ void Menu::readFiles()
 			opens file at the same time
 		*/
 
-		while (!inStream.eof())
+		while (inStream.good())
 		{
 			//cout << "Reading Top Stream section from readFiles() " << endl << endl;
 
@@ -283,6 +283,11 @@ void Menu::readFiles()
 		}
 
 		inStream.close();
+
+		if (wrapper.size() == 0) {
+			std::string err = "No data read from " + readFile;
+			throw file_open_error(err);
+		}
 	}
 	catch (missing_arguments& ma1) {
 		//Error handling
@@ -293,6 +298,8 @@ void Menu::readFiles()
 		//Error handling
 		cout << "File open error caugh in Menu::ReadFile: " << endl;
 		cout << endl << foe1.what() << endl;
+
+		throw file_open_error(readFile);
 	}
 	catch (std::bad_alloc& ba1) {
 		std::cout << "Caught bad alloc exception in Menu::readFiles "
