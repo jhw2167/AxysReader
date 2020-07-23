@@ -19,11 +19,15 @@
 #include <chrono>
 #include <ctime>
 
-//other includes
-#include <vector>
+//math includes
 #include <algorithm>
 #include <cmath>
 #include <random>
+
+//other includes
+#include <vector>
+#include <thread>
+#include <mutex>
 
 
 //Using Statements

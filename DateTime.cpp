@@ -436,8 +436,6 @@ Date Date::operator--(int dec)
 		yyyy--;
 	}
 
-	cout << endl;
-
 	return *this;
 }
 

@@ -23,12 +23,18 @@ int main(int argc, const char* argv[])
 	try
 	{
 		Menu menu;
-		static int count = 0;
 		int choice = 0;
 
 		while (!menu.exit()) {
-			std::cin >> choice;
-			menu.mainMenu(choice);
+			
+			if (!(cin >> choice) ) {
+				menu.mainMenu(5);
+				cin.clear();
+			}
+			else {
+				menu.mainMenu(choice);
+			}
+			
 		}
 		
 	}

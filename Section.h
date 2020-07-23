@@ -188,12 +188,12 @@ private:
 		if (sec.secName == "Equities" || sec.secName == "Alternative Assets")
 
 		{
-			cout << "Client: " << sec.rows.at(0).getClientName() << endl;
+			//cout << "Client: " << sec.rows.at(0).getClientName() << endl;
 			//cout << "Section: " << secName << endl;
 			//cout << "Vector Length: " << rows.size() << "  numRows: " << numRows <<
 				//endl << "  Total Reads so far: " << rows.at(0).getTotalReads();
-			cout << endl << "               | " << "Total equity reads: " << equityReads << " |";
-			cout << endl << endl;
+			//cout << endl << "               | " << "Total equity reads: " << equityReads << " |";
+			//cout << endl << endl;
 		}
 		return is;
 	}

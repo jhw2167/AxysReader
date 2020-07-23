@@ -200,8 +200,8 @@ void Section::aggregateRows(const Lookups& lks, SectionVals& sv)
 
 	if (percDone > threshold) {
 		double newThresh = (int)(percDone * 100000) % 25;
-		threshold += newThresh;
-		cout << endl << percDone << "%" << " processing outputs" << endl;
+		//threshold += newThresh;
+		cout << endl << dr.getTotalAgg() << " total rows comp" << " processing outputs" << endl;
 	}
 }
 

@@ -133,6 +133,7 @@ void DataRow::aggregate(const Lookups& lks, SectionVals& sv, std::string secName
 
 	//Extra
 	totalAgg++;
+
 	writeCols = writes.size();
 }
 
@@ -188,6 +189,8 @@ std::string DataRow::searchTicker(const std::string& fileName)
 			"datarow::aggregate::searchTicker " << endl;
 		std::cout << "Setting ticker to !FOUND" << endl;
 
+		or1;
+
 		ticker = "!FOUND";
 	}
 	catch (const file_open_error& op1)
@@ -205,11 +208,10 @@ std::string DataRow::searchTicker(const std::string& fileName)
 			showError = false;
 		}
 
+		op1;
+
 		ticker = "!FOUND";
 	}
-	
-	
-
 	return ticker;
 }
 
@@ -230,7 +232,6 @@ std::string DataRow::searchSP(const std::string& fileName, std::string targetDat
 	std::string search = "Temp Date val stored here";
 
 	std::string discard;
-	char sep;
 	/*
 		sp_comp hold each line's sp_500 value, search will hold
 		each file line's date value, which will be compared to
@@ -299,6 +300,8 @@ std::string DataRow::searchSP(const std::string& fileName, std::string targetDat
 			"datarow::aggregate::searchTicker for date "<< targetDate << endl;
 		std::cout << "Setting sp val to 0" << endl;
 
+		or1;
+
 		sp_comp = "0";
 	}
 	catch (const file_open_error& op1)
@@ -315,6 +318,8 @@ std::string DataRow::searchSP(const std::string& fileName, std::string targetDat
 
 			showError = false;
 		}
+
+		op1;
 
 		sp_comp = "0";
 	}

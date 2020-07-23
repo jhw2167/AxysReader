@@ -40,7 +40,14 @@ void Menu::mainMenu(int opt)
 			initConfigs();
 			readFiles();
 
-			aggregate();
+			try
+			{
+				aggregate();
+			}
+			catch (const std::exception& e1) {
+				cout << "Unkown Exception caught in aggregate:   " << e1.what() << endl;
+			}
+			
 			writeFiles();
 			break;
 
@@ -61,7 +68,6 @@ void Menu::mainMenu(int opt)
 
 		default:
 			cout << endl << "That is not an option, please select a number 1-4" << endl;
-
 			break;
 		}
 	}
@@ -336,20 +342,65 @@ void Menu::aggregate()
 	std::stringstream time;
 
 	time << std::put_time(localTime, "%m/%d/%Y");
-
 	cout << "Lookup files val_sp: " << lookupFiles.val_SP << endl;
 
-	for (auto& section : wrapper)
+	/*
+		We instantiate use of threads to help the program run faster,
+		this shouldnt be modified
+	*/
+
+	const int totThreads = 9;
+	std::thread threads[totThreads];
+
+	std::vector<Section>::iterator start;
+	std::vector<Section>::iterator end;
+
+	std::vector<int> startNums;
+	std::vector<int> endNums;
+	startNums.push_back(0);
+
+	for (size_t i = 1; i != totThreads; i++) {
+		int num = (wrapper.size() * i) / totThreads;
+		endNums.push_back(num);
+
+		startNums.push_back(endNums.at(i - 1));
+	}
+
+	endNums.push_back(wrapper.size());
+	
+	for (size_t i = 0; i != totThreads; i++) {
+
+		start = wrapper.begin() + startNums[i];
+		end = wrapper.begin() + endNums[i];
+					
+		std::thread t1{ &Menu::aggregateTask, this,
+			start, end, std::ref(time), std::ref(sp500) };
+
+		threads[i] = std::move(t1);
+	}
+
+	for (size_t i = 0; i != totThreads; i++) {
+		threads[i].join();
+	} 
+}
+
+void Menu::aggregateTask(const std::vector<Section>::iterator start,
+	const std::vector<Section>::iterator end,
+	const std::stringstream& time, const double& sp500)
+{
+	//cout << "Entering thread ID: " << std::this_thread::get_id() << endl;
+
+
+	for (auto iter = start; iter != end; ++iter)
 	{
 		SectionVals sv;
 		sv.nowDate = time.str();
 		sv.sp_current = sp500;
 
-		section.aggregateSecs(lookupFiles, sv);
+		iter->aggregateSecs(lookupFiles, sv);
 	}
-
-	
 }
+
 
 void Menu::writeFiles()
 {

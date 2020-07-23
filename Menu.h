@@ -54,6 +54,9 @@ private:
 
 	void readFiles();
 	void aggregate();
+	void aggregateTask(const std::vector<Section>::iterator start,
+		const std::vector<Section>::iterator end,
+		const std::stringstream& time, const double& sp500);
 	void writeFiles();
 	std::ifstream& readThrough(std::ifstream& is, std::string& brk);
 
