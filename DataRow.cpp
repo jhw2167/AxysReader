@@ -13,6 +13,12 @@ int DataRow::writeCols = 0;
 int DataRow::totalRead = 0;
 int DataRow::totalWritten = 0;
 int DataRow::totalAgg = 0;
+
+
+namespace AR {
+	struct Debugger output;
+}
+
 //End inits
 
 
@@ -152,6 +158,8 @@ std::string DataRow::searchTicker(const std::string& fileName)
 		discard is just for excess on each line
 	*/
 
+	std::stringstream errStream;
+
 	try
 	{
 		std::ifstream inFile(fileName);
@@ -185,33 +193,39 @@ std::string DataRow::searchTicker(const std::string& fileName)
 	}
 	catch (const std::out_of_range& or1)
 	{
-		std::cout << "Out of range exception caught in " <<
-			"datarow::aggregate::searchTicker " << endl;
-		std::cout << "Setting ticker to !FOUND" << endl;
-
+		if (AR::output.lvl_2) {
+			errStream << "Out of range exception caught in " <<
+				"datarow::aggregate::searchTicker " << endl;
+			errStream << "Setting ticker to !FOUND" << endl;
+		}
+			
 		or1;
-
 		ticker = "!FOUND";
 	}
 	catch (const file_open_error& op1)
 	{
-		static bool showError = true;
-	
-		if (showError)
-		{
-			std::cout << "File Open error caught in " <<
-				"datarow::aggregate::searchTicker " << endl;
-			std::cout << "Check file " << fileName << 
-				" for corruption or if it is missing"  << endl;
-			std::cout << "Setting all tickers to !FOUND" << endl;
+		
+		static bool showFOE = true;
 
-			showError = false;
+		if (showFOE && AR::output.lvl_1)
+		{
+			errStream << "File Open error caught in " <<
+				"datarow::aggregate::searchTicker " << endl;
+			errStream << "Check file " << fileName <<
+				" for corruption or if it is missing" << endl;
+			errStream << "Setting all tickers to !FOUND" << endl;
+
+			showFOE = false;
 		}
 
 		op1;
-
 		ticker = "!FOUND";
 	}
+
+	if (AR::output.lvl_1) {
+		cout << errStream.str();
+	}
+
 	return ticker;
 }
 
@@ -239,6 +253,7 @@ std::string DataRow::searchSP(const std::string& fileName, std::string targetDat
 		below
 		discard is just for excess on each line
 	*/
+	std::stringstream errStream;
 
 	try
 	{
@@ -272,22 +287,16 @@ std::string DataRow::searchSP(const std::string& fileName, std::string targetDat
 		}
 
 		if (!inFile) {
+			inFile.close();
 
 			Date notFound(targetDate);
 
 			if (notFound > minDate) {
 				notFound--;
-				inFile.close();
 				searchSP(fileName, notFound.getStringDate());
 			}
 			else {
-				sp_comp = "0";
-
-				if (false) {
-					std::cout << "sp_comp vale NOT FOUND for date: " << targetDate <<
-						", setting sp_value to 0" << endl;
-				}
-				
+				throw std::out_of_range("");				
 			}
 			
 		}
@@ -296,38 +305,42 @@ std::string DataRow::searchSP(const std::string& fileName, std::string targetDat
 	}
 	catch (const std::out_of_range& or1)
 	{
-		std::cout << "Out of range exception caught in " <<
-			"datarow::aggregate::searchTicker for date "<< targetDate << endl;
-		std::cout << "Setting sp val to 0" << endl;
+		if (AR::output.lvl_2) {
+			errStream << "Out of range exception caught in " <<
+				"datarow::aggregate::searchTicker for date " << targetDate << endl;
+			errStream << "sp_val not found, Setting sp val to 0" << endl;
+		}
 
 		or1;
-
 		sp_comp = "0";
 	}
 	catch (const file_open_error& op1)
 	{
 		static bool showError = true;
 
-		if (showError)
+		if (showError && AR::output.lvl_1)
 		{
-			std::cout << "File Open error caught in " <<
+			errStream << "File Open error caught in " <<
 				"datarow::aggregate::searchTicker " << endl;
-			std::cout << "Check file " << fileName <<
+			errStream << "Check file " << fileName <<
 				" for corruption or if it is missing" << endl;
-			std::cout << "Setting all tickers to !FOUND" << endl;
+			errStream << "Setting all tickers to !FOUND" << endl;
 
 			showError = false;
 		}
 
 		op1;
-
 		sp_comp = "0";
 	}
 	catch (const bad_date_component& bd1)
 	{
-		std::cout << "Bad date component exception found in sp_search " <<
+		errStream << "Bad date component exception found in sp_search " <<
 			"for date: " << targetDate << "sp value will be seet to default 0";
 		sp_comp = "0";
+	}
+
+	if (AR::output.lvl_1) {
+		cout << errStream.str();
 	}
 
 	return sp_comp;

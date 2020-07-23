@@ -27,14 +27,24 @@ int main(int argc, const char* argv[])
 
 		while (!menu.exit()) {
 			
-			if (!(cin >> choice) ) {
+			bool opt = !(cin >> choice);
+
+			if (opt) {
 				menu.mainMenu(5);
+				cout << endl;
+
 				cin.clear();
+				cin.ignore(10, '\n');
 			}
 			else {
+				cin.ignore(1, '\n');
 				menu.mainMenu(choice);
 			}
-			
+
+
+			if (!menu.exit())
+				menu.mainMenu(0);
+
 		}
 		
 	}

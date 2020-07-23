@@ -100,6 +100,27 @@ struct SectionVals {
 //all read, write data, and thats how they are written
 //to the file
 
+struct Debugger {
+	/* very simpl struct that defines bools for lvl_1
+	and levevel 2 output.  These are NOT levels in terms
+	of Axys Reader's lvl 1/lvl 2 header/footer input but
+	in terms of verbosity of error messages */
+
+	bool lvl_0;
+	//token bool meant as a defualt
+
+	bool lvl_1;
+	bool lvl_2;
+
+	Debugger() : lvl_0(true),
+		lvl_1(false),
+		lvl_2(false) {}
+};
+
+namespace AR {
+	extern struct Debugger output;
+}
+
 
 class DataRow
 {

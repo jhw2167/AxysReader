@@ -15,17 +15,3 @@
 		Windows SDk 10.0, written in x86 for 32-bit OS and above
 
 */
-
-
-/*
-	//Using
-	using std::string;
-	using std::cout;
-	using std::endl;
-	using std::ifstream;
-	using std::ostream;
-	using std::istream;
-	using std::cin;
-	using std::vector;
-
-*/

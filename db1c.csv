@@ -166,7 +166,7 @@ Clark (Original) Consolidated Account,Corona Water Clbl 9/1/2022 @ 100,219707am,
 Clark (Original) Consolidated Account,Washington Fed Grant Clbl 9/1/2022 ,938823au,116.86,11/14/2016,109696,116861,100000
 Clark (Original) Consolidated Account,U.S. TIPS,912810fr,109.26,9/29/2017,469610.89,445937.99,408144
 Clark (Original) Consolidated Account,CA Infrastructure Clbl 2/1/2023 @ 1,13034ade,112.04,2/20/2019,332091,336129,300000
-Clark (Original) Consolidated Account,Houston TX GO Clbl 3/1/24 @100,442331e6,116.38,12/21/2017,232162,232760,200000
+Clark (Original) Consolidated Account,Houston TX GO Clbl 3/1/24 @100,4.42E+11,116.38,12/21/2017,232162,232760,200000
 Clark (Original) Consolidated Account,University Calif. Revs (UnRefunded ,91412g6p,113.76,12/20/2017,86876,91007.2,80000
 Clark (Original) Consolidated Account,University Calif. Revs PreRe 5/15/2,91412g5w,113.76,12/20/2017,76114.5,79631.3,70000
 Clark (Original) Consolidated Account,California St G.O. NC,13063cye,121.06,11/14/2016,737328,726348,600000
@@ -245,7 +245,7 @@ TOTAL PORTFOLIO,,,,,133422346.9,73223975.86,
 ,,,,,,,
 Portfolio,,Security,Unit,,Market,Total,
 Name,Security,Symbol,Cost,Date,Value,Cost         Quantity,
------------------------------------------------,-----------------------------------,--------,-------,--------,---------------,------------------------------,
+--------------------~---------------------------,-----------------------------------,--------,-------,--------,---------------,------------------------------,
 ,,,,,,,
 ,,,,,---------------  ---------------               ,,
 TOTAL PORTFOLIO,,,,,0,0,
@@ -254,7 +254,7 @@ TOTAL PORTFOLIO,,,,,0,0,
 ,,,,,,,
 Portfolio,,Security,Unit,,Market,Total,
 Name,Security,Symbol,Cost,Date,Value,Cost         Quantity,
------------------------------------------------,-----------------------------------,--------,-------,--------,---------------,------------------------------,
+--------------------#---------------------------,-----------------------------------,--------,-------,--------,---------------,------------------------------,
 Cash & Equivalents,,,,,,,
 ------------------,,,,,,,
 Ann & Gordon Allott Combined Accounts,Accrued Dividends,accrued,,,1467,1467,
@@ -5391,7 +5391,7 @@ JW Young Trust C-1,TX Tech University Clbl 8/15/2021 @,882806bm,115.38,11/15/201
 JW Young Trust C-1,New York G.O. Clbl 3/1/23 @ 100,64966kqk,113.43,3/26/2018,111243,113432,100000
 JW Young Trust C-1,Oklahoma State Wtr Rev Clbl 4/1/22 ,67919pje,111.48,3/27/2018,162358.5,167217,150000
 JW Young Trust C-1,Florida State Ed Pub Clbl 6/1/21 @ ,34153pg3,109.58,3/27/2018,104314,109580,100000
-JW Young Trust C-1,Florida Muni Pwr Clbl 10/1/2022 @10,342816e5,114.59,12/13/2016,110059,114589,100000
+JW Young Trust C-1,Florida Muni Pwr Clbl 10/1/2022 @10,3.43E+10,114.59,12/13/2016,110059,114589,100000
 JW Young Trust C-1,TX Dallas Rapid Tran Clbl 12/1/2022,235241mz,116.2,1/26/2017,111167,116202,100000
 JW Young Trust C-1,New York St Twy Auth Gen Rv Clbl 1/,650009yc,113.2,12/22/2016,107110,113201,100000
 JW Young Trust C-1,U.S. TIPS,912810fr,111.62,6/24/2019,313073.93,303720.69,272096
@@ -6059,7 +6059,7 @@ Randy Clark,Hawaii State (Unrefunded Balance),419792gr,117.37,6/28/2013,10661.1,
 Randy Clark,Hawaii State PreRe 12/1/21 @100,419792gj,117.37,6/28/2013,95949.9,105634.8,90000
 Randy Clark,Washington State G.O. Clbl 7/1/2023,93974c7h,120.08,11/14/2016,113776,120080,100000
 Randy Clark,Washington Fed Grant Clbl 9/1/2022 ,938823au,116.86,11/14/2016,109696,116861,100000
-Randy Clark,Houston TX GO Clbl 3/1/24 @100,442331e6,116.38,12/21/2017,232162,232760,200000
+Randy Clark,Houston TX GO Clbl 3/1/24 @100,4.42E+11,116.38,12/21/2017,232162,232760,200000
 Randy Clark,U.S. TIPS,912810ps,114.27,8/11/2016,540373.93,508585.59,445077
 Randy Clark,Energy Transfer Operating LP Clbl 3,29278nan,111.73,6/29/2020,222920.3,223465,200000
 Randy Clark,Southwest Airlines Clbl 6/15/27 @ 1,844741bk,104.56,6/29/2020,206920.98,209127.5,200000

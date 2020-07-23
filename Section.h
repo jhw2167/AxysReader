@@ -70,7 +70,6 @@ private:
 	std::vector<std::string> summaryVals;
 	//holds summary vls for the end of each section
 
-
 	/*  Private Functions  */
 	const bool readRows(std::istream& is);
 	void readSubsections(std::istream& is);
@@ -129,8 +128,12 @@ private:
 			int index = std::min(line.find_first_of(','), line.size());
 			sec.secName = line.substr(0, index);
 
-			if (dr.getTotalReads() > 7000) {
+			if (AR::output.lvl_1 && sec.level == 2) {
 				cout << "First line of header is: " << sec.secName << endl;
+			}
+			else if (AR::output.lvl_2){
+				cout << "First line of header is: " << sec.secName << endl;
+				getchar();
 			}
 
 			for (size_t i = 0; i != sec.details->headLength - 1; i++) {
@@ -154,15 +157,23 @@ private:
 
 		}
 		catch (const no_such_object& ns1){
-			cout << "Blank section found at level " << sec.level 
-				<< "... Proceeding with reads" << endl << endl;
+
+			if (AR::output.lvl_1) {
+				cout << "Blank section found at level " << sec.level
+					<< "... Proceeding with reads" << endl << endl;
+			}
+			
 			ns1;
 			blankSec = true;
 		}
 		catch (const std::exception& e1){
-			cout << "Unkown exception caught in section level " <<
-				sec.level << " with error code: " << endl 
-				<< e1.what() << endl;
+
+			if (AR::output.lvl_1) {
+				cout << "Unkown exception caught in section level " <<
+					sec.level << " with error code: " << endl
+					<< e1.what() << endl;
+			}
+
 
 			blankSec = true;
 		}
@@ -182,19 +193,32 @@ private:
 		if (!blankSec) {
 			sec.readSummaryvals();
 		}
-
-
+		else if (sec.level == 2) {
+			std::getline(is, line);
+			//we need to get one more line from
+			//footer in a blank section
+		}
 
 		if (sec.secName == "Equities" || sec.secName == "Alternative Assets")
-
 		{
-			//cout << "Client: " << sec.rows.at(0).getClientName() << endl;
-			//cout << "Section: " << secName << endl;
-			//cout << "Vector Length: " << rows.size() << "  numRows: " << numRows <<
-				//endl << "  Total Reads so far: " << rows.at(0).getTotalReads();
-			//cout << endl << "               | " << "Total equity reads: " << equityReads << " |";
-			//cout << endl << endl;
+			/*  Handling visibility of output by different levels  */
+
+			if (AR::output.lvl_1) {
+				cout << "Client: " << sec.rows.at(0).getClientName() << endl;
+			}
+
+			if (AR::output.lvl_2) {
+				cout << "Section: " << sec.secName << endl;
+				cout << "Vector Length: " << sec.rows.size() << "  numRows: " << sec.numRows <<
+				endl << "  Total Reads so far: " << sec.rows.at(0).getTotalReads();
+			}
+
+			if (AR::output.lvl_1) {
+				cout << endl << "| " << "Total equity reads: " << sec.equityReads << " |";
+				cout << endl << "-------------------------___\n\n\n";
+			}
 		}
+
 		return is;
 	}
 

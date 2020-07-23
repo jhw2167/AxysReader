@@ -135,10 +135,17 @@ void Section::aggregateSecs(const Lookups& lks, SectionVals& sv)
 			sv.total_port = summaryVals.at(0);
 		}
 		catch (const std::out_of_range& e1)
-		{
-			cout << "Out of range error caught in summaryVals.at(0)" <<
-				" footer not properly exported, error message:  " <<
-				endl << endl << e1.what() << endl;
+		{ 
+			if (AR::output.lvl_1)
+			{
+				std::stringstream errStream;
+				errStream << "Out of range error caught in summaryVals.at(0), aggregateSecs, " <<
+					"section level: " << level << " footer not properly exported, error message:  "
+					<< endl << e1.what() << endl;
+
+				cout << errStream.str();
+			}
+			
 			sv.total_port = "0";
 		}
 
@@ -165,14 +172,28 @@ void Section::aggregateSecs(const Lookups& lks, SectionVals& sv)
 		}
 		catch (const std::out_of_range& or1)
 		{
-			cout << "Out of range error caught in loading section values" <<
-				" footer not properly exported, error message:  " <<
-				endl << endl << or1.what() << endl;
+			if (AR::output.lvl_1)
+			{
+				std::stringstream errStream;
+				errStream << "Out of range error caught in loading section values" <<
+					" footer not properly exported, error message:  " <<
+					endl << or1.what() << endl << endl;;
+
+				cout << errStream.str();
+			}
+			
 		}
 
 		//Call aggregate secs for each subsection, which
 		//will in turn call aggregate rows
 
+		if (AR::output.lvl_1) 	{
+			std::stringstream ss;
+			ss << endl << "------------------------" << endl;
+			ss << "Begining aggregation for client: " << clientName << endl;
+			cout << ss.str();
+		}
+		
 		for (auto& sub : subs) {
 			sub.aggregateSecs(lks, sv);
 		}
@@ -195,13 +216,22 @@ void Section::aggregateRows(const Lookups& lks, SectionVals& sv)
 
 	DataRow dr = rows.at(0);
 	double percDone = 100 * (dr.getTotalAgg() /
-		static_cast<double>(dr.getTotalReads()));
+		static_cast<double>(equityReads));
 	static double threshold = 0;
 
-	if (percDone > threshold) {
-		double newThresh = (int)(percDone * 100000) % 25;
-		//threshold += newThresh;
-		cout << endl << dr.getTotalAgg() << " total rows comp" << " processing outputs" << endl;
+	if (percDone > threshold || percDone == 100) {
+		int newThresh = (int)(percDone * 100000) % 25;
+		std::stringstream ss;
+		ss << percDone << "%" << " processing outputs" << endl << endl;
+
+		if (AR::output.lvl_1) {
+			cout << ss.str();
+		}
+		else {
+			threshold += newThresh;
+			cout << ss.str();
+		}
+
 	}
 }
 
@@ -428,9 +458,10 @@ void Section::readSummaryvals()
 		}
 		summaryVals.push_back(std::to_string(total));
 
-		break;
 		//set client Name
 		clientName = subs.at(0).getClientName();
+
+		break;
 	}
 	
 }

@@ -42,16 +42,17 @@ public:
 	/*  Constructor  */
 	hf_config(hf_config& hf, int lvl);
 
-	hf_config(std::ifstream& toRead, int lvl);
+	hf_config(std::ifstream& toRead, int lvl,
+		bool readOut);
 
 
 	/*  Initializers  */
 
-	void config(std::ifstream& toRead);
+	void config(std::ifstream& toRead, const bool readOut);
 
-	void initHeader(std::ifstream& is);
+	void initHeader(std::ifstream& is, const bool readOut);
 
-	void initFooter(std::ifstream& is);
+	void initFooter(std::ifstream& is, const bool readOut);
 
 	void initKeywords(std::ifstream& is);
 

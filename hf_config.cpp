@@ -17,16 +17,17 @@ hf_config::hf_config(hf_config& hf, int lvl) {
 }
 
 //Init from file
-hf_config::hf_config(std::ifstream& toRead, int lvl) {
+hf_config::hf_config(std::ifstream& toRead, int lvl,
+	const bool readOut) {
 	level = lvl;
-	config(toRead);
+	config(toRead, readOut);
 }
 
 //End constructors
 
 
 /*  Initializers  */
-void hf_config::config(std::ifstream& toRead)
+void hf_config::config(std::ifstream& toRead, const bool readOut)
 {
 	std::string breaks[3] = { "Section Header:", "KEYWORDS:",
 		"Section Footer:" };
@@ -37,11 +38,16 @@ void hf_config::config(std::ifstream& toRead)
 	std::string lvlString = "Level: " + std::to_string(level);
 	readThrough(toRead, lvlString);
 
+	if (readOut) {
+		std::cout << "Reading section header/footer in for level: "
+			<< level << "\n\n";
+	}
+		
 	//Read through file until first "break" 
 	//indicates we have arrived at our header
 	readThrough(toRead, breaks[0]);
-	initHeader(toRead);
-
+	initHeader(toRead, readOut);
+	cout << endl;
 
 	//Read through file until we arrive at 
 	//second break
@@ -51,15 +57,25 @@ void hf_config::config(std::ifstream& toRead)
 
 	//And third break, our footer section 
 	readThrough(toRead, breaks[2]);
-	initFooter(toRead);
+	initFooter(toRead, readOut);
+	cout << endl;
+
+	if (readOut) {
+		std::cout << "Finished level: "
+			<< level << "\n\n";
+		std::cout << std::string(30, '-') << endl;
+	}
 
 }
 
-void hf_config::initHeader(std::ifstream& is)
+void hf_config::initHeader(std::ifstream& is, const bool readOut)
 {
 
 	//First read in bool that inidicates if we HAVE a header
 	is >> hasHeader;
+
+	if (readOut)
+		std::cout << "Section has header: " << hasHeader << endl;
 
 	if (!hasHeader)
 		return;
@@ -82,6 +98,10 @@ void hf_config::initHeader(std::ifstream& is)
 		//now get next line and read in header from the file
 		//until we hit the breaker
 		while (std::getline(is, val) && val != breaker) {
+
+			if (readOut)
+				cout << val << endl;
+
 			headLength++;
 		}
 
@@ -105,10 +125,13 @@ void hf_config::initHeader(std::ifstream& is)
 	return;
 }
 
-void hf_config::initFooter(std::ifstream& is)
+void hf_config::initFooter(std::ifstream& is, const bool readOut)
 {
 	//First read in bool that inidicates if we HAVE a header
 	is >> hasFooter;
+
+	if (readOut)
+		std::cout << "Section has footer:" << hasFooter << endl;
 
 	if (!hasFooter)
 		return;
@@ -134,7 +157,14 @@ void hf_config::initFooter(std::ifstream& is)
 		footLength++;
 		//stopper must be equal to first line of footer
 
+		if (readOut)
+			cout << val << endl;
+
 		while (std::getline(is, val) && val != breaker) {
+
+			if (readOut)
+				cout << val << endl;
+
 			footLength++;
 		}
 

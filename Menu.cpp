@@ -18,7 +18,7 @@ Menu::Menu() {
 /*  Other Functions  */
 void Menu::mainMenu(int opt)
 {
-	std::cout << "Opt is: " << opt << endl;
+	std::cout << "\nOpt is: " << opt << endl;
 
 	try
 	{
@@ -30,8 +30,8 @@ void Menu::mainMenu(int opt)
 				"csv files into a desirable format \n" << "What would you like " <<
 				" to do: " << endl
 				<< "1 - Read Files" << std::string(5, ' ')
-				<< "2 - Config Header" << std::string(5, ' ')
-				<< "3 - Config Footer" << std::string(5, ' ')
+				<< "2 - Config Header/Footer" << std::string(5, ' ')
+				<< "3 - Config Debugger" << std::string(5, ' ')
 				<< "4 - Exit" << endl;
 			break;
 
@@ -40,25 +40,26 @@ void Menu::mainMenu(int opt)
 			initConfigs();
 			readFiles();
 
-			try
-			{
+			try {
 				aggregate();
 			}
 			catch (const std::exception& e1) {
 				cout << "Unkown Exception caught in aggregate:   " << e1.what() << endl;
+				cout << "Proceeding to write files to " << writeFile << endl;
 			}
 			
 			writeFiles();
 			break;
 
 		case 2:
-			//Config Header
-
+			//Config Header/Footer
+			initConfigs();
+			configHF();
 			break;
 
 		case 3:
-			//Config Footer
-
+			//Config debugger
+			configOutputs();
 			break;
 
 		case 4:
@@ -85,7 +86,7 @@ void Menu::mainMenu(int opt)
 		cout << "Unknown exception caught in main menu" << endl;
 		throw;
 	}
-	
+
 }
 
 const bool Menu::exit() const {
@@ -199,7 +200,7 @@ void Menu::setFileHelp(std::string& coreFile)
 	return;
 }
 
-void Menu::initConfigs()
+void Menu::initConfigs(const bool readOut)
 {
 	try
 	{
@@ -222,7 +223,7 @@ void Menu::initConfigs()
 		cout << "Number of levels: " << levels << endl;
 
 		for (size_t i = 0; i != levels; i++) {
-			hf_config newConfig(inStream, i+1);
+			hf_config newConfig(inStream, i+1, readOut);
 			configs.push_back(newConfig);
 		}
 		//configures the header/footer information
@@ -244,6 +245,108 @@ void Menu::initConfigs()
 
 }
 
+void Menu::configOutputs()
+{
+	std::cout << "Debugger output levels are organized into levels of verbosity" << endl;
+	std::cout << "Please select an option: " << endl
+		<< "0 - Minimum output" << std::string(5, ' ')
+		<< "1 - Some output" << std::string(5, ' ')
+		<< "2 - Verbose output" << endl;
+
+	int choice = 0;
+	bool exit = false;
+
+	while (!exit) {
+
+		if (!(cin >> choice) || choice > 2) {
+			cin.clear();
+			cout << "Not an option, please choose between 0 and 2" << endl;
+			choice = 0;
+		}
+		else {
+			cin.ignore(1);
+			exit = true;
+		}
+
+	}
+	cout << "Output Configured\n\n\n\n\n\n";
+
+	bool arr[3] = { false, false, false };
+
+	for (size_t i = 0; i != 3; i++) {
+		if (i == choice)
+			arr[i] = true;
+	} 
+
+	AR::output.lvl_0 = arr[0];
+	AR::output.lvl_1 = arr[1] || arr[2];
+	AR::output.lvl_2 = arr[2];
+}
+
+void Menu::configHF()
+{
+	std::cout << "\n\nThis section of the program will take you through the "
+		"steps to configure the header/footer manually." << endl << endl;
+
+
+	std::cout << "Please open and view the 'Sections.txt' file located at: " 
+		<< SectionsFile << endl << endl;
+
+	std::cout << "The number at the top indicates the total number of 'levels'"
+		<< ", or Section/subsections, there are surrounding " << endl
+		<< "the datarows. \n";
+		
+	std::cout << "You can scroll down to see the section header/footers "
+		<< "between the '&&&&&' signs in the file" << endl;
+
+	std::cout << "Level 1 - the innermost layer \n";
+	std::cout << "Level 2 - the outer layer, and so on \n";
+
+	std::cout << "---------------------------------------------------------\n";
+	std::cout << std::string(16, ' ') << "Press Enter to continue\n";
+	std::cout << "---------------------------------------------------------\n";
+
+	getchar();
+
+	std::cout << "To alter an existing header/footer, you need to save a file with"
+		<< " your new header footer as a \n .CSV (comma delimited) file and "
+		<< "copy/paste the entire header/footer between the existing \n ampersand signs,"
+		<< "be careful not to delete the ampersand signs, they are NOT part\n"
+		<< "of the header and merely exist as guidlines for the code\n\n";
+
+	std::cout << "NOTE: It is important that any BLANK lines between sections be "
+		<< "included in your header/footer,\n but please ensure blank lines never"
+		<< "START a header section, and only start a footer\n section IF it is only "
+		<< "blank lines that delineate one section from the next, otherwise they\n"
+		<< "should always be trailing elements of header/footer section\n\n";
+
+	std::cout << "NOTE 2: The first line of the footer is known as the STOPPER "
+		<< "and is what tells the program when to stop \n reading subsections or "
+		<< "datarows.  This first line MUST BE GENERAL TO THE FIRST LINE OF\n ALL "
+		<< "FOOTERS so that the program always knows where to stop reading datarows\n\n";
+
+	std::cout << "---------------------------------------------------------\n";
+	std::cout << std::string(16, ' ') << "Press Enter to continue\n";
+	std::cout << "---------------------------------------------------------\n";
+
+	getchar();
+
+	std::cout << "To disable or enable a header/footer, simply switch the single"
+		<< " digit above the header/footer\n section (should be a 0 or 1)"
+		<< "to a 0 (program reads no header/footer), or 1 respectively. \n"
+		<< "Once again, do NOT delete the '&&&&&' symbols\n\n";
+
+
+	std::cout << "The program will now read out and configure the new header/footers\n\n";
+
+	std::cout << "---------------------------------------------------------\n";
+	std::cout << std::string(16, ' ') << "Press Enter to continue\n";
+	std::cout << "---------------------------------------------------------\n";
+
+	initConfigs(true);
+
+}
+
 void Menu::readFiles()
 {
 	std::cout << "Please move file to current directory " <<
@@ -256,7 +359,7 @@ void Menu::readFiles()
 		std::cin >> readFile;
 		//reads infile name entered by the user
 
-		readFile = "db1c.csv";
+		readFile = "db1c_6.csv";
 
 		if (readFile == "")
 		{
@@ -265,7 +368,7 @@ void Menu::readFiles()
 			throw missing_arguments(noArg);
 		}
 
-		cout << "File name: " << readFile << endl << endl;
+		cout << "Entered Read File name: " << readFile << endl << endl;
 
 		ifstream inStream(readFile);
 		std::string line;
@@ -275,17 +378,42 @@ void Menu::readFiles()
 			opens file at the same time
 		*/
 
+
+		if (AR::output.lvl_2) {
+			cout << "\n\nEntering read data while loop with debugger output level 2:\n\n"
+				<< "You will have to parse through sections with the enter key" << endl <<
+				"Alternatively, spam a number of charcters into the cmdLine and press <Enter> "
+				<< endl << "to run many lines at once     " << "Press enter to continue" << endl;
+
+			getchar();
+			getchar();
+			cout << "\n\n--------------------------------------------------------\n\n";
+		}
+
 		while (inStream.good())
 		{
-			//cout << "Reading Top Stream section from readFiles() " << endl << endl;
-
 			//generally its bad practice to use eof, 
 			//but it suits our needs here
+			
+			try
+			{
+				Section s = Section(&configs, levels);
+				inStream >> s;
 
-			Section s = Section(&configs, levels);
-			inStream >> s;
+				wrapper.push_back(s);
+			}
+			catch (const std::out_of_range& ia1) {
+				cout << "invalid argument caught in Menu::Reads, while loop:  " <<
+					ia1.what() << endl;
+			}
+			catch (const std::exception& e1) {
+				//Error handling
+				cout << "Unkown exception caught in Menu::ReadFile, while loop:  " <<
+					e1.what() << endl;;
 
-			wrapper.push_back(s);
+				throw e1;
+			}
+			
 		}
 
 		inStream.close();
@@ -310,12 +438,12 @@ void Menu::readFiles()
 	catch (std::bad_alloc& ba1) {
 		std::cout << "Caught bad alloc exception in Menu::readFiles "
 			<< "Proceeding to write rows out and exit ";
-
 		throw ba1;
 	}
-	catch (...) {
+	catch (const std::exception& e1) {
 		//Error handling
-		cout << "Unkown exception caught in Menu::ReadFile";
+		cout << "Unkown exception caught in Menu::ReadFile  " <<
+			e1.what() << endl;;
 	}
 	
 	DataRow row;
@@ -349,8 +477,14 @@ void Menu::aggregate()
 		this shouldnt be modified
 	*/
 
-	const int totThreads = 9;
-	std::thread threads[totThreads];
+	int threadNumTBD;
+	if (wrapper.size() > 18)
+		threadNumTBD = 9;
+	else
+		threadNumTBD = 1;
+
+	int totThreads = threadNumTBD;
+	std::vector<std::thread> threads;
 
 	std::vector<Section>::iterator start;
 	std::vector<Section>::iterator end;
@@ -368,6 +502,11 @@ void Menu::aggregate()
 
 	endNums.push_back(wrapper.size());
 	
+	if (AR::output.lvl_1) {
+		cout << "Entering " << totThreads << " threads for aggregate function"
+			<< endl << endl;
+	}
+
 	for (size_t i = 0; i != totThreads; i++) {
 
 		start = wrapper.begin() + startNums[i];
@@ -376,11 +515,11 @@ void Menu::aggregate()
 		std::thread t1{ &Menu::aggregateTask, this,
 			start, end, std::ref(time), std::ref(sp500) };
 
-		threads[i] = std::move(t1);
+		threads.push_back(std::move(t1));
 	}
 
 	for (size_t i = 0; i != totThreads; i++) {
-		threads[i].join();
+		threads.at(i).join();
 	} 
 }
 
