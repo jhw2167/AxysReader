@@ -122,6 +122,13 @@ const bool Section::containsKeyword(const std::string& sample) const
 
 void Section::aggregateSecs(const Lookups& lks, SectionVals& sv) 
 {
+	if (AR::output.lvl_1) {
+		std::stringstream ss;
+		ss << endl << "------------------------" << endl;
+		ss << "Begining aggregation for client: " << clientName << endl;
+		cout << ss.str();
+	}
+
 
 	if (level > 1)
 	{
@@ -186,13 +193,6 @@ void Section::aggregateSecs(const Lookups& lks, SectionVals& sv)
 
 		//Call aggregate secs for each subsection, which
 		//will in turn call aggregate rows
-
-		if (AR::output.lvl_1) 	{
-			std::stringstream ss;
-			ss << endl << "------------------------" << endl;
-			ss << "Begining aggregation for client: " << clientName << endl;
-			cout << ss.str();
-		}
 		
 		for (auto& sub : subs) {
 			sub.aggregateSecs(lks, sv);
@@ -235,8 +235,11 @@ void Section::aggregateRows(const Lookups& lks, SectionVals& sv)
 	}
 }
 
-std::ifstream& Section::readThrough(std::ifstream& is, std::string& brk, char c)
+std::ifstream& Section::readThrough(std::ifstream& is, const std::string& brk,
+	char c)
 {
+	//default: c = \n, c2 = \0
+
 	/*
 		Method simply reads through the file until it hits
 		and established breakpoint (string) I expect to
@@ -253,7 +256,6 @@ std::ifstream& Section::readThrough(std::ifstream& is, std::string& brk, char c)
 
 	return is;
 }
-
 
 /*  Other Private Functions  */
 
@@ -473,22 +475,52 @@ void Section::addHoldNumber(const std::string& fileName, SectionVals& sv)
 		Adds hold (internal) acount number corresponding to account name by looking up
 		unique "Client Name" value in configs/hold_numL.csv file
 	*/
-	sv.holdNum = 0;
 
-	//cout << "our clientName is : " << clientName << endl;
+	/*
+		We will read in each line as a dataRow, then compare the datarow's second
+		column entry to that of the column name. If they are identical, we add
+		the holding number (4th data column), else we keep searching.
+	*/
+
+
+	sv.holdNum = 0;
+	if (AR::output.lvl_1)
+		cout << "our clientName is : " << clientName << endl;
 
 	std::ifstream inFile(fileName);
+	int discNum;
+	char sep;
 
-	readThrough(inFile, clientName, ',');
+	string line;
+	bool found = false;
+	enum MyEnum { CLIENT = 1, HOLNUM = 3 };
+	bool temp = true;
 
-	std::string discard;
-	std::getline(inFile, discard, ',');
-	inFile >> sv.holdNum;
-	//should put the hold num right in there by reading next
-	//integer part
+	while (!found && std::getline(inFile, line)) {
 
-	//cout << "our holdNum is : " << sv.holdNum << endl;
+		DataRow dr;
+		std::stringstream ssLine(line);
+		ssLine >> dr;
+			
+		if (dr.getReadsAt(CLIENT) == clientName) {
+			std::stringstream ss(dr.getReadsAt(HOLNUM));
+			ss >> sv.holdNum;
 
+			found = true;
+		}	
+	}
+
+	if (AR::output.lvl_1 && !std::getline(inFile, line))
+	{
+		std::stringstream errStream;
+		errStream << "Hold Number NOT found for client "
+			<< clientName << endl;
+		cout << errStream.str();
+	}
+
+	if (AR::output.lvl_1)
+		cout << "our holdNum is : " << sv.holdNum << endl << endl;
+	
 	inFile.close();
 }
 

@@ -217,9 +217,16 @@ private:
 					if (nextChar != ',')
 					{
 						val += '"';	//Need to add this back that we lost in getline
-						while ( !(nextChar == '"' && ssLine.peek() == ','))
+						char pkChar = ssLine.peek();
+						while ( !(nextChar == '"' && pkChar == ',') || (pkChar == '\n') )
 						{
 							nextChar = ssLine.get();
+							pkChar = ssLine.peek();
+
+							if (nextChar == -1) {
+								break;
+							}
+								
 							val += nextChar;
 						}
 						val.pop_back();
@@ -310,6 +317,8 @@ public:
 	const long double getTotCostAsset();
 
 	std::string getClientName();
+
+	std::string getReadsAt(int index);
 
 
 	/*  Modifiers  */

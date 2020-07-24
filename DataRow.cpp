@@ -71,6 +71,16 @@ std::string DataRow::getClientName() {
 	//client name should be at index 0 of read column
 }
 
+std::string DataRow::getReadsAt(int index) {
+
+	bool goodIndex = (index < reads.size()) && (index >= 0);
+
+	if (goodIndex)
+		return reads.at(index);
+	else
+		return std::string();
+}
+
 
 	/*  Modifiers  */
 void DataRow::setWriteCols(const int wc) {

@@ -215,7 +215,7 @@ private:
 
 			if (AR::output.lvl_1) {
 				cout << endl << "| " << "Total equity reads: " << sec.equityReads << " |";
-				cout << endl << "-------------------------___\n\n\n";
+				cout << endl << "----------------------------\n\n\n";
 			}
 		}
 
@@ -268,8 +268,8 @@ public:
 
 	void aggregateRows(const Lookups& lks, SectionVals& sv);
 
-	std::ifstream& readThrough(std::ifstream& is, std::string& brk, char c = '\n');
-
+	std::ifstream& readThrough(std::ifstream& is, const std::string& brk,
+		char c = '\n');
 
 	/*  Destructors  */
 

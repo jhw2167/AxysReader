@@ -478,12 +478,12 @@ void Menu::aggregate()
 	*/
 
 	int threadNumTBD;
-	if (wrapper.size() > 18)
-		threadNumTBD = 9;
-	else
+	if (wrapper.size() < 18 || AR::output.lvl_1)
 		threadNumTBD = 1;
+	else
+		threadNumTBD = 9;
 
-	int totThreads = threadNumTBD;
+	int totThreads = 1; // threadNumTBD;
 	std::vector<std::thread> threads;
 
 	std::vector<Section>::iterator start;
