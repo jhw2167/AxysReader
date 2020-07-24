@@ -483,7 +483,7 @@ void Menu::aggregate()
 	else
 		threadNumTBD = 9;
 
-	int totThreads = 1; // threadNumTBD;
+	int totThreads = threadNumTBD; // threadNumTBD;
 	std::vector<std::thread> threads;
 
 	std::vector<Section>::iterator start;

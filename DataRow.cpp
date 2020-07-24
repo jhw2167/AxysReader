@@ -48,19 +48,19 @@ const int DataRow::getTotalAgg() {
 	return totalAgg;
 }
 
-const long double DataRow::getMktValAsset() {
+const double DataRow::getMktValAsset() {
 
 	std::stringstream ssVal(reads.at(MRKT_VAL));
-	long double val;
+	double val;
 	ssVal >> val;
 
 	return val;
 }
 
-const long double DataRow::getTotCostAsset()
+const double DataRow::getTotCostAsset()
 {
 	std::stringstream ssVal(reads.at(TOT_COST));
-	long double val;
+	double val;
 	ssVal >> val;
 
 	return val;
@@ -135,16 +135,16 @@ void DataRow::aggregate(const Lookups& lks, SectionVals& sv, std::string secName
 	writes.push_back(std::to_string(sv.sp_current));
 
 	//Add TOTAL_PORT (read Unit Cost)
-	writes.push_back(sv.total_port);
+	writes.push_back(std::to_string(sv.total_port));
 
 	//Add CASH (From Section val)
-	writes.push_back(sv.cash);
+	writes.push_back(std::to_string(sv.cash));
 
 	//Add FIXED (From Section val)
-	writes.push_back(sv.fixed);
+	writes.push_back(std::to_string(sv.fixed));
 
 	//Add EQUITY (From Section val)
-	writes.push_back(sv.equity);
+	writes.push_back(std::to_string(sv.equity));
 
 
 	//Extra

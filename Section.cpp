@@ -74,26 +74,16 @@ std::string Section::getSecName() {
 	return secName;
 }
 
-const std::vector<string>& Section::getSummaryVals() {
+const std::vector<double>& Section::getSummaryVals() {
 	return summaryVals;
 }
 
-const long double Section::getSectionMrktVal() {
-
-	std::stringstream ssVal(summaryVals.at(0));
-	long double val;
-	ssVal >> val;
-
-	return val;
+const double Section::getSectionMrktVal() {
+	return summaryVals.at(0);
 }
 
-const long double Section::getSectionTotCost() {
-
-	std::stringstream ssVal(summaryVals.at(1));
-	long double val;
-	ssVal >> val;
-
-	return val;
+const double Section::getSectionTotCost() {
+	return summaryVals.at(0);;
 }
 
 
@@ -153,7 +143,7 @@ void Section::aggregateSecs(const Lookups& lks, SectionVals& sv)
 				cout << errStream.str();
 			}
 			
-			sv.total_port = "0";
+			sv.total_port = 0;
 		}
 
 		//delete Value
@@ -166,14 +156,21 @@ void Section::aggregateSecs(const Lookups& lks, SectionVals& sv)
 				size_t size = sub.getSummaryVals().size();
 
 				if (sub.getSecName() == "Cash & Equivalents" && size > 0) {
-					sv.cash = sub.getSummaryVals().at(0);
+					sv.cash += sub.getSummaryVals().at(0);
 				}
 				else if (sub.getSecName() == "Fixed Income" && size > 0) {
-					sv.fixed = sub.getSummaryVals().at(0);
+					sv.fixed += sub.getSummaryVals().at(0);
 				}
 				else if (sub.getSecName() == "Equities" && size > 0) {
-					sv.equity = sub.getSummaryVals().at(0);
+					sv.equity += sub.getSummaryVals().at(0);
 				}
+				else if (sub.getSecName() == "Alternative Assets" && size > 0) {
+					sv.equity += sub.getSummaryVals().at(0);
+				}
+				else if (sub.getSecName() == "Tax Exempt (Munis)") {
+					sv.equity += sub.getSummaryVals().at(0);
+				}
+				
 			}
 
 		}
@@ -420,27 +417,26 @@ void Section::readSummaryvals()
 	switch (level)
 	{
 	case 1:
+		//set client Name
+		clientName = rows.at(0).getClientName();
+
+
 		//At subsection level, sum all the values from the rows
 
 		total = 0;
 		for (auto& row : rows) {
 			total += row.getMktValAsset();
 		}
-		summaryVals.push_back(std::to_string(total));
+		summaryVals.push_back(total);
 		//Mrkt Value sum at index 0
-
 
 		total = 0;
 		for (auto& row : rows) {
 			total += row.getTotCostAsset();
 		}
 
-		summaryVals.push_back(std::to_string(total));
+		summaryVals.push_back(total);
 		//Tot cost sum at index 1
-
-
-		//set client Name
-		clientName = rows.at(0).getClientName();
 
 		break;
 
@@ -448,20 +444,26 @@ void Section::readSummaryvals()
 		//If we are at a client level, sum all the summary
 		//values from the sections below it
 
+		//set client Name
+		clientName = subs.at(0).getClientName();
+
 		total = 0;
 		for (auto& sub : subs) {
 			total += sub.getSectionMrktVal();
 		}
-		summaryVals.push_back(std::to_string(total));
+		summaryVals.push_back(total);
 
 		total = 0;
 		for (auto& sub : subs) {
 			total += sub.getSectionTotCost();
 		}
-		summaryVals.push_back(std::to_string(total));
+		summaryVals.push_back(total);
 
-		//set client Name
-		clientName = subs.at(0).getClientName();
+
+
+		
+			cout << "Total Equities for " << clientName <<
+				" sums too: " << (std::to_string(total)) << endl;
 
 		break;
 	}

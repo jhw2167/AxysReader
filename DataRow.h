@@ -72,10 +72,10 @@ struct Lookups {
 struct SectionVals {
 	std::string nowDate;
 
-	std::string cash;
-	std::string fixed;
-	std::string equity;
-	std::string total_port;
+	double cash;
+	double fixed;
+	double equity;
+	double total_port;
 
 	int holdNum;
 	std::string deleteNum;
@@ -83,10 +83,10 @@ struct SectionVals {
 	double sp_dated;			//Stored as number for calculations
 
 	SectionVals() :
-		cash("0"),
-		fixed("0"),
-		equity("0"),
-		total_port("0"),
+		cash(0),
+		fixed(0),
+		equity(0),
+		total_port(0),
 		holdNum(0),
 		deleteNum("0"),
 		sp_current(0.0),
@@ -312,9 +312,9 @@ public:
 
 	const int getTotalAgg();
 
-	const long double getMktValAsset();
+	const double getMktValAsset();
 
-	const long double getTotCostAsset();
+	const double getTotCostAsset();
 
 	std::string getClientName();
 

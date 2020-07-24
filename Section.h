@@ -67,7 +67,7 @@ private:
 	//houses details of header and footer for each
 	//section type
 
-	std::vector<std::string> summaryVals;
+	std::vector<double> summaryVals;
 	//holds summary vls for the end of each section
 
 	/*  Private Functions  */
@@ -253,11 +253,11 @@ public:
 
 	std::string getSecName();
 
-	const std::vector<string>& getSummaryVals();
+	const std::vector<double>& getSummaryVals();
 
-	const long double getSectionMrktVal();
+	const double getSectionMrktVal();
 
-	const long double getSectionTotCost();
+	const double getSectionTotCost();
 
 	/* Other Functions  */
 	void addRow(const DataRow& r);
