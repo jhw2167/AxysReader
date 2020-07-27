@@ -155,21 +155,25 @@ void Section::aggregateSecs(const Lookups& lks, SectionVals& sv)
 			for (auto& sub : subs) {
 				size_t size = sub.getSummaryVals().size();
 
-				if (sub.getSecName() == "Cash & Equivalents" && size > 0) {
-					sv.cash += sub.getSummaryVals().at(0);
+				if (size > 0)
+				{
+					if (sub.getSecName() == "Cash & Equivalents") {
+						sv.cash += sub.getSummaryVals().at(0);
+					}
+					else if (sub.getSecName() == "Fixed Income" ) {
+						sv.fixed += sub.getSummaryVals().at(0);
+					}
+					else if (sub.getSecName() == "Equities") {
+						sv.equity += sub.getSummaryVals().at(0);
+					}
+					else if (sub.getSecName() == "Alternative Assets") {
+						sv.equity += sub.getSummaryVals().at(0);
+					}
+					else if (sub.getSecName() == "Tax Exempt (Munis)") {
+						sv.fixed += sub.getSummaryVals().at(0);
+					}
 				}
-				else if (sub.getSecName() == "Fixed Income" && size > 0) {
-					sv.fixed += sub.getSummaryVals().at(0);
-				}
-				else if (sub.getSecName() == "Equities" && size > 0) {
-					sv.equity += sub.getSummaryVals().at(0);
-				}
-				else if (sub.getSecName() == "Alternative Assets" && size > 0) {
-					sv.equity += sub.getSummaryVals().at(0);
-				}
-				else if (sub.getSecName() == "Tax Exempt (Munis)") {
-					sv.equity += sub.getSummaryVals().at(0);
-				}
+
 				
 			}
 
@@ -459,11 +463,11 @@ void Section::readSummaryvals()
 		}
 		summaryVals.push_back(total);
 
-
-
-		
-			cout << "Total Equities for " << clientName <<
+		if (AR::output.lvl_2) {
+			cout << "Total Port Value for " << clientName <<
 				" sums too: " << (std::to_string(total)) << endl;
+		}
+			
 
 		break;
 	}
