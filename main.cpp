@@ -51,9 +51,10 @@ int main(int argc, const char* argv[])
 	catch (...) {
 		//Error handling
 		cout << "Unkown exception caught in Main, program exiting";
+		getchar();
 	}
 	
-
+	cout << "Press Enter to Exit Program\n";
 	getchar();
 
 	return 0;

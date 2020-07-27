@@ -1,4 +1,5 @@
 #include "Menu.h"
+#define _CRT_SECURE_NO_WARNINGS
 
 /*
 	Menu.cpp : Implementation file of Minu object declared
@@ -10,6 +11,8 @@ Menu::Menu() {
 	exMenu = false;
 	setFiles();
 	levels = 0;
+
+	includeHeaderLine = false;
 
 	mainMenu(0);
 }
@@ -359,7 +362,7 @@ void Menu::readFiles()
 		std::cin >> readFile;
 		//reads infile name entered by the user
 
-		readFile = "db1c_6.csv";
+		//readFile = "db1c_6.csv";
 
 		if (readFile == "")
 		{
@@ -462,6 +465,14 @@ void Menu::aggregate()
 
 	std::cout << "Please enter current S&P 500 value: ";
 	std::cin >> sp500;
+	//gets user sp500 value
+
+	char c = 'n';
+	std::cout << "Include header line? (y/n): ";
+	std::cin >> c;
+
+	if (c == 'y')
+		includeHeaderLine = true;
 	
 	
 	//Establish Date
@@ -470,7 +481,6 @@ void Menu::aggregate()
 	std::stringstream time;
 
 	time << std::put_time(localTime, "%m/%d/%Y");
-	cout << "Lookup files val_sp: " << lookupFiles.val_SP << endl;
 
 	/*
 		We instantiate use of threads to help the program run faster,
@@ -545,14 +555,20 @@ void Menu::writeFiles()
 {
 	std::ofstream output(writeFile);
 
+	if (includeHeaderLine) {
+		std::string headers = "TICKER,SHARES,CLIENTS,AVG_U_COST,PURCH_DATE,";
+		headers += "Number,Delete,HOLD_DATE,SP_Comp,SP_Current,Total_Port,Cash,Fixed,Equity\n";
+
+		output << headers;
+	}
+	
+
 	for (auto i : wrapper) {
 		output << i;
 	}
-	exMenu = true;
 
 	DataRow row;
 	cout << "Total writes: " << row.getTotalWrites() << endl;
-
 }
 
 std::ifstream& Menu::readThrough(std::ifstream& is, std::string& brk)

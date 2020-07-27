@@ -47,6 +47,8 @@ private:
 	std::string flagsFile;
 	int levels;
 
+	bool includeHeaderLine;
+
 	/*  Other Functions -- Private  */
 	void setFiles();
 	void setFileHelp(std::string& coreFile);

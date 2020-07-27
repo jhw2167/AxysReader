@@ -1,0 +1,21 @@
+﻿  DataRow.cpp
+C:\Users\Nick\source\repos\AxysReader\AxysReader\DataRow.cpp(76,26): warning C4018: '<': signed/unsigned mismatch
+C:\Users\Nick\source\repos\AxysReader\AxysReader\DataRow.cpp(345,35): warning C4101: 'bd1': unreferenced local variable
+  DateTime.cpp
+  Exceptions.cpp
+  hf_config.cpp
+  main.cpp
+C:\Users\Nick\source\repos\AxysReader\AxysReader\main.cpp(2,1): warning C4005: '_CRT_SECURE_NO_WARNINGS': macro redefinition
+C:\Users\Nick\source\repos\AxysReader\AxysReader\main.cpp : message : see previous definition of '_CRT_SECURE_NO_WARNINGS'
+  Menu.cpp
+C:\Users\Nick\source\repos\AxysReader\AxysReader\Menu.cpp(2,1): warning C4005: '_CRT_SECURE_NO_WARNINGS': macro redefinition
+C:\Users\Nick\source\repos\AxysReader\AxysReader\Menu.cpp : message : see previous definition of '_CRT_SECURE_NO_WARNINGS'
+C:\Users\Nick\source\repos\AxysReader\AxysReader\Menu.cpp(118,33): warning C4101: 'foe1': unreferenced local variable
+  Section.cpp
+C:\Users\Nick\source\repos\AxysReader\AxysReader\Section.cpp(498,7): warning C4101: 'sep': unreferenced local variable
+C:\Users\Nick\source\repos\AxysReader\AxysReader\Section.cpp(497,6): warning C4101: 'discNum': unreferenced local variable
+  Generating code
+  Previous IPDB not found, fall back to full compilation.
+  All 927 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Finished generating code
+  AxysReader.vcxproj -> C:\Users\Nick\source\repos\AxysReader\Release\AxysReader.exe
