@@ -14,7 +14,8 @@ Menu::Menu() {
 
 	includeHeaderLine = false;
 
-	mainMenu(0);
+	//mainMenu(0);
+	//called from main instead
 }
 
 

@@ -20,10 +20,12 @@
 
 int main(int argc, const char* argv[])
 {
+	Menu menu;
+	int choice = 0;
+
 	try
 	{
-		Menu menu;
-		int choice = 0;
+		menu.mainMenu(choice);
 
 		while (!menu.exit()) {
 			
@@ -44,7 +46,6 @@ int main(int argc, const char* argv[])
 
 			if (!menu.exit())
 				menu.mainMenu(0);
-
 		}
 		
 	}
@@ -54,8 +55,11 @@ int main(int argc, const char* argv[])
 		getchar();
 	}
 	
-	cout << "Press Enter to Exit Program\n";
-	getchar();
-
+	if (!menu.exit()) 
+	{
+		cout << "Press Enter to Exit Program\n";
+		getchar();
+	}
+	
 	return 0;
 }
