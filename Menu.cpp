@@ -53,6 +53,11 @@ void Menu::mainMenu(int opt)
 			}
 			
 			writeFiles();
+
+			exMenu = true;
+			cout << "Finished Writing Files\n Press any Key to exit program...\n";
+			getchar();
+
 			break;
 
 		case 2:
@@ -154,10 +159,6 @@ void Menu::setFiles()
 	inFile >> writeFile;
 	//get write file
 
-	std::getline(inFile, discard, ':');
-	inFile >> flagsFile;
-	//get error flag config file
-
 	//Close File
 	inFile.close();
 
@@ -224,7 +225,20 @@ void Menu::initConfigs(const bool readOut)
 		//reads in the number of "levels" we have, that is the number
 		//of distinct header/footer pairs to deal with
 
-		cout << "Number of levels: " << levels << endl;
+
+		std::string brker = "Output File Header:";
+		readThrough(inStream, brker);
+		if (!std::getline(inStream, headerLine))
+		{
+			cout << "Designator line for file header: '" << brker << 
+				"' not found -- no header will be printed,\n closing and reopening file: " << SectionsFile;
+			inStream.close();
+
+			inStream.open(SectionsFile);
+		};
+		//Read in our output file header line
+
+		cout << "Number of levels: " << headerLine << endl;
 
 		for (size_t i = 0; i != levels; i++) {
 			hf_config newConfig(inStream, i+1, readOut);
@@ -556,12 +570,8 @@ void Menu::writeFiles()
 {
 	std::ofstream output(writeFile);
 
-	if (includeHeaderLine) {
-		std::string headers = "TICKER,SHARES,CLIENTS,AVG_U_COST,PURCH_DATE,";
-		headers += "Number,Delete,HOLD_DATE,SP_Comp,SP_Current,Total_Port,Cash,Fixed,Equity\n";
-
-		output << headers;
-	}
+	if (includeHeaderLine)
+		output << headerLine << endl;
 	
 
 	for (auto i : wrapper) {
@@ -572,7 +582,7 @@ void Menu::writeFiles()
 	cout << "Total writes: " << row.getTotalWrites() << endl;
 }
 
-std::ifstream& Menu::readThrough(std::ifstream& is, std::string& brk)
+std::ifstream& Menu::readThrough(std::ifstream& is, const std::string& brk)
 {
 	/*
 		Method simply reads through the file until it hits
@@ -582,6 +592,7 @@ std::ifstream& Menu::readThrough(std::ifstream& is, std::string& brk)
 
 	std::string comp;
 	while (getline(is, comp)) {
+
 		if (comp == brk) {
 			break;
 		}

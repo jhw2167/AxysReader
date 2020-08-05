@@ -44,10 +44,10 @@ private:
 
 	std::vector<hf_config> configs;
 	std::string SectionsFile;
-	std::string flagsFile;
 	int levels;
 
 	bool includeHeaderLine;
+	std::string headerLine;
 
 	/*  Other Functions -- Private  */
 	void setFiles();
@@ -64,7 +64,7 @@ private:
 		const std::stringstream& time, const double& sp500);
 
 	void writeFiles();
-	std::ifstream& readThrough(std::ifstream& is, std::string& brk);
+	std::ifstream& readThrough(std::ifstream& is, const std::string& brk);
 
 public:
 
