@@ -56,7 +56,8 @@ void Menu::mainMenu(int opt)
 
 			exMenu = true;
 			cout << "Finished Writing Files\n Press any Key to exit program...\n";
-			getchar();
+			cin.clear();
+			char a; cin.ignore(10, '\n');  cin.get(a);
 
 			break;
 
