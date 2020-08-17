@@ -239,7 +239,7 @@ void Menu::initConfigs(const bool readOut)
 		};
 		//Read in our output file header line
 
-		cout << "Number of levels: " << headerLine << endl;
+		cout << "Number of levels: " << levels << endl;
 
 		for (size_t i = 0; i != levels; i++) {
 			hf_config newConfig(inStream, i+1, readOut);
@@ -449,7 +449,8 @@ void Menu::readFiles()
 	}
 	catch (file_open_error& foe1) {
 		//Error handling
-		cout << "File open error caugh in Menu::ReadFile: " << endl;
+		cout << "File open error caugh in Menu::ReadFile, PLEASE ENSURE the file is saved\n" << 
+			" as a .csv file and you include the file extension with the file name" << endl;
 		cout << endl << foe1.what() << endl;
 
 		throw file_open_error(readFile);
