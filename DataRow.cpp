@@ -1,4 +1,5 @@
 #include "DataRow.h"
+#include <unordered_map>
 
 /*
 	Implementation file for DataRow.h
@@ -129,7 +130,7 @@ void DataRow::aggregate(const Lookups& lks, SectionVals& sv, std::string secName
 	writes.push_back(sv.nowDate);
 
 	//Add SP_COMP (Read Lookup: Date in SP_Val_lookup, Formula)
-	writes.push_back(searchSP(lks.val_SP));
+	writes.push_back(searchSP(lks.val_SP, reads.at(DATE)));
 
 	//Add SP_CURRENT (Entered value)
 	writes.push_back(std::to_string(sv.sp_current));
@@ -153,207 +154,117 @@ void DataRow::aggregate(const Lookups& lks, SectionVals& sv, std::string secName
 	writeCols = writes.size();
 }
 
-std::string DataRow::searchTicker(const std::string& fileName)
-{
-	std::string ticker = "!FOUND";
-	std::string search = "Company Name stored here";
-	std::string discard;
-	char sep;
-	/*
-		Ticker hold each line's ticker value, search will hold
-		each file line's company value, which will be compared to 
-		security below, which is the string name of THIS datarow's
-		company name, stored in its "security" column
-
-		discard is just for excess on each line
-	*/
+std::string DataRow::searchTicker(const std::string& fileName) {
+	static std::unordered_map<std::string, std::string> tickerMap;
+	static bool loaded = false;
 
 	std::stringstream errStream;
 
-	try
-	{
+	if (!loaded) {
 		std::ifstream inFile(fileName);
-		//declare and open our file
+		if (!inFile) {
+			throw file_open_error("Could not open ticker file: " + fileName);
+		}
 
-		const std::string security = reads.at(SECURITY);
-		//This is the value we are vLookingUp to find
-		//the right ticker
+		std::string company, ticker, discard;
 
-		while ((search != security) && inFile)
-		{
+		while (inFile) {
 			if (inFile.peek() == '"') {
-				inFile >> sep;
-				std::getline(inFile, search, '"');
-				search = '"' + search + '"';
-				inFile >> sep;
+				inFile.get(); // skip "
+				getline(inFile, company, '"');
+				company = '"' + company + '"';
+				inFile.get(); // skip ,
 			}
 			else {
-				std::getline(inFile, search, ',');
+				getline(inFile, company, ',');
 			}
-			
-			std::getline(inFile, ticker, ',');
-			std::getline(inFile, discard);
-		}
+			getline(inFile, ticker, ',');
+			getline(inFile, discard);
 
-		if (!inFile) {
-			ticker = "!FOUND";
+			tickerMap[company] = ticker;
 		}
-
-		inFile.close();
+		loaded = true;
 	}
-	catch (const std::out_of_range& or1)
-	{
+
+	std::string security = reads.at(SECURITY);
+
+	auto it = tickerMap.find(security);
+	if (it != tickerMap.end()) {
+		return it->second;
+	}
+	else {
 		if (AR::output.lvl_2) {
-			errStream << "Out of range exception caught in " <<
-				"datarow::aggregate::searchTicker " << endl;
-			errStream << "Setting ticker to !FOUND" << endl;
+			errStream << "Ticker not found for company: " << security << endl;
 		}
-			
-		or1;
-		ticker = "!FOUND";
-	}
-	catch (const file_open_error& op1)
-	{
-		
-		static bool showFOE = true;
-
-		if (showFOE && AR::output.lvl_1)
-		{
-			errStream << "File Open error caught in " <<
-				"datarow::aggregate::searchTicker " << endl;
-			errStream << "Check file " << fileName <<
-				" for corruption or if it is missing" << endl;
-			errStream << "Setting all tickers to !FOUND" << endl;
-
-			showFOE = false;
+		if (AR::output.lvl_1) {
+			cout << errStream.str();
 		}
-
-		op1;
-		ticker = "!FOUND";
+		return "!FOUND";
 	}
-
-	if (AR::output.lvl_1) {
-		cout << errStream.str();
-	}
-
-	return ticker;
 }
 
-std::string DataRow::searchSP(const std::string& fileName, std::string targetDate)
-{
-	/*
-		We search for the dated SP_500 value in sp_val file by date
-		if we do not find the desired date we subtract a day and search again
-		until found. if the date is less than the minDate, we assign
-		0 and continue to next entry.		
-	*/
 
-	//If we cant find the date, we ensure its greater than
-			// 1/2/1985
+std::string DataRow::searchSP(const std::string& fileName, std::string targetDateString) {
+	static std::vector<std::pair<Date, std::string>> spVals;
+	static bool loaded = false;
 	const static Date minDate = Date(1985, 1, 2);
 
-	std::string sp_comp = "0";
-	std::string search = "Temp Date val stored here";
-
-	std::string discard;
-	/*
-		sp_comp hold each line's sp_500 value, search will hold
-		each file line's date value, which will be compared to
-		targetDate (generated from file read)
-		below
-		discard is just for excess on each line
-	*/
 	std::stringstream errStream;
 
-	try
-	{
+	if (!loaded) {
 		std::ifstream inFile(fileName);
-		//declare and open our file
-
 		if (!inFile) {
-			//cout << "not in file: " << fileName << endl;;
-			throw file_open_error("");
+			throw file_open_error("Could not open SP file: " + fileName);
 		}
 
-		if (targetDate == minDate.getStringDate()) {
-			targetDate = reads.at(DATE);
+		std::string dateStr, spVal, discard;
+		getline(inFile, discard); // skip header
+		getline(inFile, discard); // skip header
 
-			if (Date(targetDate) < minDate) {
-				inFile.close();
+		while (getline(inFile, dateStr, ',')) {
+			getline(inFile, spVal, ',');
+			getline(inFile, discard);
+
+			try {
+				Date d(dateStr);
+				spVals.emplace_back(d, spVal);
+			}
+			catch (const bad_date_component&) {
+				if (AR::output.lvl_2) {
+					cout << "Invalid date in SP file: " << dateStr << endl;
+				}
 			}
 		}
-		//This is the value we are vLookingUp to find
-		//the right ticker
 
-		std::getline(inFile, discard);
-		std::getline(inFile, discard);
-		//First two lines are extraneous
+		// just to be sure
+		std::sort(spVals.begin(), spVals.end(),
+			[](const auto& a, const auto& b) { return a.first < b.first; });
 
-		while ((search != targetDate) && inFile)
-		{
-			std::getline(inFile, search, ',');
-			std::getline(inFile, sp_comp, ',');
-			std::getline(inFile, discard);
-		}
-
-		if (!inFile) {
-			inFile.close();
-
-			Date notFound(targetDate);
-
-			if (notFound > minDate) {
-				notFound--;
-				searchSP(fileName, notFound.getStringDate());
-			}
-			else {
-				throw std::out_of_range("");				
-			}
-			
-		}
-		else
-			inFile.close();
+		loaded = true;
 	}
-	catch (const std::out_of_range& or1)
-	{
+
+	Date targetDate(targetDateString);
+	if (targetDate < minDate) {
 		if (AR::output.lvl_2) {
-			errStream << "Out of range exception caught in " <<
-				"datarow::aggregate::searchTicker for date " << targetDate << endl;
-			errStream << "sp_val not found, Setting sp val to 0" << endl;
+			cout << "Date below minDate: " << targetDateString << endl;
 		}
-
-		or1;
-		sp_comp = "0";
-	}
-	catch (const file_open_error& op1)
-	{
-		static bool showError = true;
-
-		if (showError && AR::output.lvl_1)
-		{
-			errStream << "File Open error caught in " <<
-				"datarow::aggregate::searchTicker " << endl;
-			errStream << "Check file " << fileName <<
-				" for corruption or if it is missing" << endl;
-			errStream << "Setting all tickers to !FOUND" << endl;
-
-			showError = false;
-		}
-
-		op1;
-		sp_comp = "0";
-	}
-	catch (const bad_date_component& bd1)
-	{
-		errStream << "Bad date component exception found in sp_search " <<
-			"for date: " << targetDate << "sp value will be seet to default 0";
-		sp_comp = "0";
+		return "165.37"; // fallback
 	}
 
-	if (AR::output.lvl_1) {
-		cout << errStream.str();
+	auto it = std::lower_bound(spVals.begin(), spVals.end(), targetDate,
+		[](const auto& pair, const Date& val) {
+			return pair.first < val;
+		});
+
+	if (it == spVals.begin()) {
+		return it->second; // earliest value
+	}
+	if (it == spVals.end() || it->first != targetDate) {
+		// if not exact, fallback to previous date
+		--it;
 	}
 
-	return sp_comp;
+	return it->second;
 }
 
 

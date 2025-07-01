@@ -139,6 +139,8 @@ std::istream& operator>>(std::istream &is, Date &dateToSet)
 //END DATE EXTRACTION STREAM OPERATOR
 
 
+Date::Date(){
+}
 
 
 //BEGIN DATE CONSTRUCTOR
@@ -151,23 +153,9 @@ Date::Date(int year, int month, int day) {
 
 //BEGIN DATE STRING CONSTRUCTOR
 Date::Date(std::string newDate)
-{
-	std::stringstream ssDate(newDate);
-
-	int yr, mm, dy;
-	char c;
-
-	ssDate >> mm;
-	ssDate >> c;
-
-	ssDate >> dy;
-	ssDate >> c;
-
-	ssDate >> yr;
-	
-	setDate(yr, mm, dy);
-
-	//cout << "Sample date is: " << *this << endl;;
+{	
+	setDate(newDate);
+	//cout << "Sample date is: " << *this << endl;
 
 }
 
@@ -250,16 +238,16 @@ void Date::setDate(int year, int month, int day)	//yyyy, mm, dd format
 	try
 	{
 		if (invalidDate) {
-			cout << "Attempt to assign invalid date, setting date to default values" << endl;
+			//cout << "Attempt to assign invalid date, setting date to default values" << endl;
 			throw bad_date_component(dateErr);
 		}
 	}
 	catch (bad_date_component &bdc1)
 	{
-		cout << bdc1.what();
+		//cout << bdc1.what();
 
 		//Exception is function ending
-		throw;
+		throw bad_date_component(bdc1);
 	}
 
 	yyyy = year;
@@ -269,6 +257,32 @@ void Date::setDate(int year, int month, int day)	//yyyy, mm, dd format
 }
 //END SET DATE METHOD
 
+
+void Date::setDate(const std::string newDate)
+{
+	//cout << "Date(String) Attempting to read date: " << newDate << endl;
+	if (newDate.empty() || newDate.size() < 6) return;
+	std::stringstream ssDate(newDate);
+
+	int yr, mm, dy;
+	char c;
+
+	ssDate >> mm;
+	ssDate >> c;
+
+	ssDate >> dy;
+	ssDate >> c;
+
+	ssDate >> yr;
+
+	try {
+		setDate(yr, mm, dy);
+	}
+	catch (const bad_date_component& bd1) {
+		cout << endl << "Setting date failed: " << bd1.what() << endl;
+		cout << endl << "String date: " << newDate << endl;
+	}
+}
 
 //BEGIN SET DATE MEMBER FUNCTION -- TAKES DATE OBJECT
 void Date::setDate(const Date &otherDate)	

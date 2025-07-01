@@ -133,7 +133,7 @@ private:
 			}
 			else if (AR::output.lvl_2){
 				cout << "First line of header is: " << sec.secName << endl;
-				getchar();
+				//getchar();
 			}
 
 			for (size_t i = 0; i != sec.details->headLength - 1; i++) {

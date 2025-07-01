@@ -55,7 +55,7 @@ int main(int argc, const char* argv[])
 		getchar();
 	}
 	
-	if (!menu.exit()) 
+	if (!menu.exit())
 	{
 		cout << "Press Enter to Exit Program\n";
 		getchar();

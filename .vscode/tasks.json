@@ -1,0 +1,31 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "build AxysReader",
+        "type": "shell",
+        "command": "g++",
+        "args": [
+          "-g",
+          "main.cpp",
+          "DataRow.cpp",
+          "DateTime.cpp",
+          "Exceptions.cpp",
+          "hf_config.cpp",
+          "Menu.cpp",
+          "Section.cpp",
+          "-o",
+          "AxysReader.out"
+        ],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        },
+        "problemMatcher": ["$gcc"],
+        "options": {
+  "cwd": "${workspaceFolder}"
+}
+      }
+    ]
+  }
+  

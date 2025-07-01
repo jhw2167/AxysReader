@@ -428,7 +428,7 @@ void Menu::readFiles()
 			catch (const std::exception& e1) {
 				//Error handling
 				cout << "Unkown exception caught in Menu::ReadFile, while loop:  " <<
-					e1.what() << endl;;
+					e1.what() << endl;
 
 				throw e1;
 			}
@@ -493,22 +493,33 @@ void Menu::aggregate()
 	
 	
 	//Establish Date
+	std::time_t now_c = std::time(nullptr);
+	std::tm localTime;
+	localtime_s(&localTime, &now_c);
+
+	std::stringstream time;
+	time << std::put_time(&localTime, "%m/%d/%Y");
+
+	/*
 	std::time_t const now_c = std::time(NULL);
 	auto localTime = std::localtime(&now_c);
 	std::stringstream time;
 
 	time << std::put_time(localTime, "%m/%d/%Y");
+	*/
 
 	/*
 		We instantiate use of threads to help the program run faster,
 		this shouldnt be modified
 	*/
 
-	int threadNumTBD;
+	int threadNumTBD = 1;
+	/*
 	if (wrapper.size() < 18 || AR::output.lvl_1)
 		threadNumTBD = 1;
 	else
 		threadNumTBD = 9;
+	*/
 
 	int totThreads = threadNumTBD; // threadNumTBD;
 	std::vector<std::thread> threads;

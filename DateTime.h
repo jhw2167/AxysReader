@@ -90,6 +90,8 @@ private:
 
 public:
 
+	Date();
+
 	Date(int year = 1821, int month = 7, int day = 13);		//yyyy, mm, dd format
 
 	Date(std::string newDate);
@@ -97,6 +99,8 @@ public:
 	Date(const Date &dateToCopy);			//date class copy constructor 
 
 	void setDate(int year, int month, int day);				//yyyy, mm, dd format
+
+	void setDate(const std::string otherDate);
 
 	void setDate(const Date &otherDate);
 

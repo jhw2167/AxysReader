@@ -1,0 +1,19 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Run AxysReader",
+        "type": "cppdbg",
+        "request": "launch",
+        "program": "${workspaceFolder}/AxysReader.out",
+        "args": [],
+        "stopAtEntry": false,
+        "cwd": "${workspaceFolder}",
+        "environment": [],
+        "externalConsole": true,
+        "MIMode": "gdb",
+        "preLaunchTask": "build AxysReader"
+      }
+    ]
+  }
+  
